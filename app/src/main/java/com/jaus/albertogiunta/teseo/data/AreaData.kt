@@ -7,7 +7,7 @@ data class InfoCell(val id: Int,
                     val antennaPosition: Point)
 
 data class Point(var x: Int,
-                 var y: Int)
+                 var y: Int) : Any()
 
 data class Coordinates(val northWest: Point,
                        val northEast: Point,

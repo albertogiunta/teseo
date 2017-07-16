@@ -2,42 +2,88 @@ package com.jaus.albertogiunta.teseo
 
 import com.jaus.albertogiunta.teseo.data.Area
 import com.jaus.albertogiunta.teseo.data.AreaJson
+import com.jaus.albertogiunta.teseo.data.Cell
 import com.jaus.albertogiunta.teseo.data.Point
+import com.jaus.albertogiunta.teseo.util.Direction
+import com.jaus.albertogiunta.teseo.util.MovementHelper
+import com.jaus.albertogiunta.teseo.util.SignalHelper
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import okhttp3.*
 import java.util.concurrent.TimeUnit
 
 
-class MainPresenter(val view: View) : WebSocketListener(), OnUserPositionChangedListener {
+class MainPresenter(val view: View) : WebSocketListener(), UserMovementListener {
 
-    var area: Area
+    var signal: SignalHelper = SignalHelper()
 
-    init {
-        val moshi: Moshi = Moshi.Builder().build()
-        val jsonAdapter: JsonAdapter<Area> = moshi.adapter(Area::class.java)
-        area = jsonAdapter.fromJson(AreaJson.json) as Area
-    }
+    var area: Area? = null
+        set(value) {
+            field = value
+            value?.let { view.onAreaUpdated(it) }
+        }
+
+    var positionObservers: MutableList<UserPositionListener> = mutableListOf()
+
+    var cell: Cell? = null
+        set(value) {
+            field = value
+            value?.let { signal.onCellUpdated(it) }
+        }
 
     var position: Point = Point(0, 0)
+        set(value) {
+            field = value
+            positionObservers.forEach { o -> o.onPositionChanged(value) }
+        }
 
+
+    // TODO sposta in file diverso e fa logica per diverse weboskcet
     var address = "ws://10.0.2.2:8080/connect"
+    lateinit var webSocket: WebSocket
 
-    lateinit var websocket: WebSocket
+    init {
+        area = unmarshalArea()
+        cell = area!!.cells.filter { c -> c.isEntryPoint }.first()
+        view.onAreaUpdated(area!!)
 
+        positionObservers.add(signal)
+        positionObservers.add(view)
+
+    }
+
+    private fun unmarshalArea(): Area {
+        val moshi: Moshi = Moshi.Builder().build()
+        val jsonAdapter: JsonAdapter<Area> = moshi.adapter(Area::class.java)
+        return jsonAdapter.fromJson(AreaJson.json) as Area
+    }
+
+    override fun onMovementDetected(direction: Direction) {
+
+        val tempPosition = direction.operationOnPoint(position)
+
+        cell?.let {
+            if (MovementHelper.isMovementLegit(tempPosition, (cell as Cell).infoCell.roomVertices, (cell as Cell).passages)) {
+                position = tempPosition
+
+            }
+        }
+    }
+
+    fun sendMessageViaWS(s: String) {
+        webSocket.send(s)
+    }
+
+    /////////////// WEBSOCKET ///////////////
 
     fun run() {
         val client = OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .build()
-
         val request = Request.Builder()
                 .url(address)
                 .build()
-
-        websocket = client.newWebSocket(request, this)
-
-        // Trigger shutdown of the dispatcher's executor so this process can exit cleanly.
+        webSocket = client.newWebSocket(request, this)
         client.dispatcher().executorService().shutdown()
     }
 
@@ -52,37 +98,6 @@ class MainPresenter(val view: View) : WebSocketListener(), OnUserPositionChanged
 
     override fun onMessage(webSocket: WebSocket, text: String?) {
         System.out.println("MESSAGE: " + text)
-        view.onAreaReceived(this.area)
+//        view.onAreaUpdated(area!!)
     }
-
-    override fun onMovementDetected(direction: Direction) {
-        position = direction.operationOnPoint(position)
-        view.onPositionChanged(position)
-    }
-}
-
-interface OnUserPositionChangedListener {
-
-    fun onMovementDetected(direction: Direction)
-
-}
-
-enum class Direction {
-    NORTH {
-        override fun operationOnPoint(originalPoint: Point): Point = Point(originalPoint.x, originalPoint.y + 1)
-    },
-
-    SOUTH {
-        override fun operationOnPoint(originalPoint: Point): Point = Point(originalPoint.x, originalPoint.y - 1)
-    },
-
-    WEST {
-        override fun operationOnPoint(originalPoint: Point): Point = Point(originalPoint.x - 1, originalPoint.y)
-    },
-
-    EAST {
-        override fun operationOnPoint(originalPoint: Point): Point = Point(originalPoint.x + 1, originalPoint.y)
-    };
-
-    abstract fun operationOnPoint(originalPoint: Point): Point
 }
