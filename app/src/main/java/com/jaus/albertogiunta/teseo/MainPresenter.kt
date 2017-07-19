@@ -1,21 +1,24 @@
 package com.jaus.albertogiunta.teseo
 
 import com.jaus.albertogiunta.teseo.data.Area
-import com.jaus.albertogiunta.teseo.data.AreaJson
-import com.jaus.albertogiunta.teseo.data.Cell
+import com.jaus.albertogiunta.teseo.data.CellForCell
+import com.jaus.albertogiunta.teseo.data.InfoCell
 import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.util.Direction
-import com.jaus.albertogiunta.teseo.util.MovementHelper
-import com.jaus.albertogiunta.teseo.util.SignalHelper
+import com.jaus.albertogiunta.teseo.util.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import okhttp3.*
-import java.util.concurrent.TimeUnit
+import trikita.log.Log
 
 
-class MainPresenter(val view: View) : WebSocketListener(), UserMovementListener {
+interface CellSwitch {
+    fun switchToCell(cell: InfoCell)
+}
 
-    var signal: SignalHelper = SignalHelper()
+class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, CellSwitch, Receivers {
+
+    var signal: SignalHelper = SignalHelper(this)
+
+    var webSocketHelper = WebSocketHelper(this)
 
     var area: Area? = null
         set(value) {
@@ -25,7 +28,7 @@ class MainPresenter(val view: View) : WebSocketListener(), UserMovementListener 
 
     var positionObservers: MutableList<UserPositionListener> = mutableListOf()
 
-    var cell: Cell? = null
+    var cell: CellForCell? = null
         set(value) {
             field = value
             value?.let { signal.onCellUpdated(it) }
@@ -37,25 +40,21 @@ class MainPresenter(val view: View) : WebSocketListener(), UserMovementListener 
             positionObservers.forEach { o -> o.onPositionChanged(value) }
         }
 
-
-    // TODO sposta in file diverso e fa logica per diverse weboskcet
-    var address = "ws://10.0.2.2:8080/connect"
-    lateinit var webSocket: WebSocket
-
     init {
-        area = unmarshalArea()
-        cell = area!!.cells.filter { c -> c.isEntryPoint }.first()
-        view.onAreaUpdated(area!!)
+//        area = unmarshalArea("")
+//        cell = area!!.cells.filter { c -> c.isEntryPoint }.first()
+//        view.onAreaUpdated(area!!)
 
         positionObservers.add(signal)
         positionObservers.add(view)
 
     }
 
-    private fun unmarshalArea(): Area {
+    private fun unmarshalArea(string: String): Area {
         val moshi: Moshi = Moshi.Builder().build()
         val jsonAdapter: JsonAdapter<Area> = moshi.adapter(Area::class.java)
-        return jsonAdapter.fromJson(AreaJson.json) as Area
+//        return jsonAdapter.fromJson(AreaJson.json) as Area
+        return jsonAdapter.fromJson(string) as Area
     }
 
     override fun onMovementDetected(direction: Direction) {
@@ -63,41 +62,34 @@ class MainPresenter(val view: View) : WebSocketListener(), UserMovementListener 
         val tempPosition = direction.operationOnPoint(position)
 
         cell?.let {
-            if (MovementHelper.isMovementLegit(tempPosition, (cell as Cell).infoCell.roomVertices, (cell as Cell).passages)) {
+            if (MovementHelper.isMovementLegit(tempPosition, (cell as CellForCell).infoCell.roomVertices, (cell as CellForCell).passages)) {
                 position = tempPosition
 
             }
         }
     }
 
-    fun sendMessageViaWS(s: String) {
-        webSocket.send(s)
+    override fun onAreaUpdated(area: Area) {
+        this.area = area
     }
 
-    /////////////// WEBSOCKET ///////////////
+    override fun onConnectMessageReceived(text: String?) {
+        Log.d("onConnectMessageReceived: received message $text")
 
-    fun run() {
-        val client = OkHttpClient.Builder()
-                .readTimeout(0, TimeUnit.MILLISECONDS)
-                .build()
-        val request = Request.Builder()
-                .url(address)
-                .build()
-        webSocket = client.newWebSocket(request, this)
-        client.dispatcher().executorService().shutdown()
+        text?.let { onAreaUpdated(unmarshalArea(it)) }
     }
 
-    override fun onClosing(webSocket: WebSocket, code: Int, reason: String?) {
-        webSocket.close(1000, null)
-        System.out.println("CLOSE: $code $reason")
+    override fun onAlarmMessageReceived(text: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onFailure(webSocket: WebSocket?, t: Throwable, response: Response?) {
-        t.printStackTrace()
+    fun askConnection() {
+        val msg = if (area == null) "firstconnection" else "connect"
+        webSocketHelper.connectWS.send(msg)
+        Log.d("askConnection: sent message $msg")
     }
 
-    override fun onMessage(webSocket: WebSocket, text: String?) {
-        System.out.println("MESSAGE: " + text)
-//        view.onAreaUpdated(area!!)
+    override fun switchToCell(cell: InfoCell) {
+        TODO()
     }
 }

@@ -1,7 +1,7 @@
 package com.jaus.albertogiunta.teseo.util
 
 import com.jaus.albertogiunta.teseo.data.Area
-import com.jaus.albertogiunta.teseo.data.Cell
+import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.data.Point
 
 
@@ -61,7 +61,7 @@ class CellUpdateSubject : Subject<CellUpdateSubject>() {
         state = this
     }
 
-    var cell: Cell? = null
+    var cell: CellForCell? = null
         set(value) {
             field = value
             notifyObservers()

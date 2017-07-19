@@ -17,11 +17,9 @@ class MainActivity : View, BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        presenter.run()
-
         btnPrint.setOnClickListener {
-            val str = "I want to connect"
-            presenter.sendMessageViaWS(str)
+            val str = "connect"
+            presenter.askConnection()
             Log.d("onCreate: $str")
         }
 

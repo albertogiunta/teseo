@@ -7,30 +7,34 @@ import com.jaus.albertogiunta.teseo.data.Point
 object MovementHelper {
 
     fun isMovementLegit(position: Point, roomVertices: Coordinates, passages: List<Passage>): Boolean {
-        if ((position.y <= roomVertices.northWest.y &&
-                position.y >= roomVertices.southWest.y &&
-                position.x <= roomVertices.northEast.x &&
-                position.x >= roomVertices.northWest.x)) {
+        if (DistanceHelper.doesPointLieInsideRectangle(position, roomVertices, 0)) {
             return true
         } else {
             passages.forEach { (_, startCoordinates, endCoordinates) ->
-                if (doesPointLieOnLine(startCoordinates, endCoordinates, position)) {
+                if (DistanceHelper.doesPointLieOnLine(startCoordinates, endCoordinates, position)) {
                     return true
                 }
             }
             return false
         }
     }
-
-    private fun doesPointLieOnLine(a: Point, b: Point, point: Point): Boolean {
-        val allowance = 1
-        return DistanceHelper.calculateDistanceBetweenPoints(a, point) + DistanceHelper.calculateDistanceBetweenPoints(point, b) < DistanceHelper.calculateDistanceBetweenPoints(a, b) + allowance
-    }
 }
 
 object DistanceHelper {
     fun calculateDistanceBetweenPoints(a: Point, b: Point): Double {
         return Math.sqrt((Math.pow((b.x - a.x).toDouble(), 2.0)) + Math.pow((b.y - a.y).toDouble(), 2.0))
+    }
+
+    fun doesPointLieInsideRectangle(point: Point, vertices: Coordinates, padding: Int): Boolean {
+        return point.y <= vertices.northWest.y - padding &&     // if under top border
+                point.y >= vertices.southWest.y + padding &&    // if above of bottom border
+                point.x <= vertices.northEast.x - padding &&    // if on the left of right border
+                point.x >= vertices.northWest.x + padding       // if on the right of left border
+    }
+
+   fun doesPointLieOnLine(a: Point, b: Point, point: Point): Boolean {
+        val allowance = 1
+        return DistanceHelper.calculateDistanceBetweenPoints(a, point) + DistanceHelper.calculateDistanceBetweenPoints(point, b) < DistanceHelper.calculateDistanceBetweenPoints(a, b) + allowance
     }
 }
 

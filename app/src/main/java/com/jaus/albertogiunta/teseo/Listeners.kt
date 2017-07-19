@@ -1,7 +1,7 @@
 package com.jaus.albertogiunta.teseo
 
 import com.jaus.albertogiunta.teseo.data.Area
-import com.jaus.albertogiunta.teseo.data.Cell
+import com.jaus.albertogiunta.teseo.data.CellForCell
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.util.Direction
 
@@ -13,7 +13,7 @@ interface AreaUpdateListener {
 
 interface CellUpdateListener {
 
-    fun onCellUpdated(cell: Cell)
+    fun onCellUpdated(cell: CellForCell)
 
 }
 
