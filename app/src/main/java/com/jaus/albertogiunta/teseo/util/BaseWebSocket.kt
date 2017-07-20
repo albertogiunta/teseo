@@ -12,13 +12,25 @@ interface Receivers {
 
     fun onAlarmMessageReceived(text: String?)
 
+    fun onRouteMessageReceived(text: String?)
+
 }
 
 class WebSocketHelper(val receivers: Receivers) {
 
     lateinit var connectWS: CustomWebSocket
     lateinit var alarmWS: CustomWebSocket
-    var baseAddress: String = "ws://10.0.2.2:8080/uri1"
+    lateinit var routeWS: CustomWebSocket
+
+
+    var ip: String = "ws://10.0.2.2"
+    var cellUri: String = ":8080/uri1"
+        set(value) {
+            field = value
+            baseAddress = ip + cellUri
+            Log.d("Now connecting to $baseAddress")
+        }
+    var baseAddress: String = ip + cellUri
 
     init {
         initWS()
@@ -26,31 +38,30 @@ class WebSocketHelper(val receivers: Receivers) {
 
     fun initWS() {
         connectWS = WebSocketFactory(baseAddress).websocketForChannel(CONNECTION, receivers)
+        routeWS = WebSocketFactory(baseAddress).websocketForChannel(ROUTE, receivers)
         alarmWS = WebSocketFactory(baseAddress).websocketForChannel(ALARM, receivers)
-
+        connectWS.send("connect")
     }
 
     fun disconnectWS() {
-        connectWS.send("disconnectWS")
-        connectWS.send("connect")
-        alarmWS.send("connect")
-        alarmWS.send("disconnectWS")
+        connectWS.send("disconnect")
+        alarmWS.send("disconnect")
     }
 
     fun handleSwitch(cell: InfoCell) {
         disconnectWS()
-        baseAddress = cell.uri // TODO has to be fixed server side
+        cellUri = cell.uri
         initWS()
     }
 }
 
 class WebSocketFactory(val baseAddress: String) {
-    fun websocketForChannel(channel: CHANNEL, receivers: Receivers) : CustomWebSocket {
+    fun websocketForChannel(channel: CHANNEL, receivers: Receivers): CustomWebSocket {
         val address = baseAddress + channel.endpoint
         when (channel) {
-            CONNECTION -> return ConnectionWebSocket(address, receivers::onConnectMessageReceived)
-            ALARM -> return AlarmWebSocket(address, receivers::onAlarmMessageReceived)
-            ROUTE -> TODO()
+            CONNECTION -> return BaseWebSocket(address, receivers::onConnectMessageReceived)
+            ROUTE -> return BaseWebSocket(address, receivers::onRouteMessageReceived)
+            ALARM -> return BaseWebSocket(address, receivers::onAlarmMessageReceived)
             POSITION_UPDATE -> TODO()
         }
     }
@@ -58,17 +69,15 @@ class WebSocketFactory(val baseAddress: String) {
 
 interface CustomWebSocket {
 
-    fun onMessage(webSocket: WebSocket, text: String)
-
     fun send(s: String)
 
-    fun run()
+    fun onMessage(webSocket: WebSocket, text: String)
 
 }
 
-abstract class BaseWebSocket(val address: String) : CustomWebSocket, WebSocketListener() {
+class BaseWebSocket(address: String, val onMessageListener: (text: String?) -> Unit) : CustomWebSocket, WebSocketListener() {
 
-    lateinit var webSocket: WebSocket
+    var webSocket: WebSocket
 
     init {
         val client = OkHttpClient.Builder()
@@ -79,10 +88,6 @@ abstract class BaseWebSocket(val address: String) : CustomWebSocket, WebSocketLi
                 .build()
         webSocket = client.newWebSocket(request, this)
         client.dispatcher().executorService().shutdown()
-    }
-
-    override fun run() {
-
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String?) {
@@ -97,27 +102,15 @@ abstract class BaseWebSocket(val address: String) : CustomWebSocket, WebSocketLi
     override fun send(s: String) {
         webSocket.send(s)
     }
-}
-
-class ConnectionWebSocket(address: String, val onMessageListener: (text: String?) -> Unit) : BaseWebSocket(address) {
-
-    override fun onMessage(webSocket: WebSocket, text: String) {
-        Log.d("onMessage: RICEVUTA AREAAAAAAA $text")
-        onMessageListener(text)
-    }
-}
-
-class AlarmWebSocket(address: String, val onMessageListener: (text: String?) -> Unit) : BaseWebSocket(address) {
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         onMessageListener(text)
     }
 }
-
 
 enum class CHANNEL(val endpoint: String) {
     CONNECTION("/connect"),
     ROUTE("/route"),
-    POSITION_UPDATE("/position-update"),
-    ALARM("/alarm")
+    ALARM("/alarm"),
+    POSITION_UPDATE("/position-update")
 }

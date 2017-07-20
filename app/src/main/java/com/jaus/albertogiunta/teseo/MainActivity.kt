@@ -2,12 +2,12 @@ package com.jaus.albertogiunta.teseo
 
 import android.os.Bundle
 import com.jaus.albertogiunta.teseo.data.Area
+import com.jaus.albertogiunta.teseo.data.InfoCell
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.util.Direction
 import kotlinx.android.synthetic.main.activity_main.*
-import trikita.log.Log
 
-interface View : AreaUpdateListener, UserPositionListener
+interface View : AreaUpdateListener, UserPositionListener, RouteListener
 
 class MainActivity : View, BaseActivity() {
 
@@ -17,11 +17,8 @@ class MainActivity : View, BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnPrint.setOnClickListener {
-            val str = "connect"
-            presenter.askConnection()
-            Log.d("onCreate: $str")
-        }
+        btnConnect.setOnClickListener { presenter.askConnection() }
+        btnRoute.setOnClickListener { presenter.askRoute() }
 
         btnUp.setOnClickListener { presenter.onMovementDetected(Direction.NORTH) }
         btnDown.setOnClickListener { presenter.onMovementDetected(Direction.SOUTH) }
@@ -37,4 +34,15 @@ class MainActivity : View, BaseActivity() {
         runOnUiThread { drawView.setUserPosition(userPosition) }
     }
 
+    override fun onRouteReceived(route: List<InfoCell>) {
+        runOnUiThread { drawView.setRoute(route) }
+    }
+
+    override fun onEmergencyRouteReceived(route: List<InfoCell>) {
+        runOnUiThread { drawView.setRoute(route) }
+    }
+
+    override fun onRouteFollowedUntilEnd() {
+        runOnUiThread { drawView.invalidateROute() }
+    }
 }

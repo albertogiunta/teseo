@@ -1,20 +1,10 @@
 package com.jaus.albertogiunta.teseo
 
-import com.jaus.albertogiunta.teseo.data.Area
-import com.jaus.albertogiunta.teseo.data.CellForCell
-import com.jaus.albertogiunta.teseo.data.InfoCell
-import com.jaus.albertogiunta.teseo.data.Point
+import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.util.*
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 import trikita.log.Log
 
-
-interface CellSwitch {
-    fun switchToCell(cell: InfoCell)
-}
-
-class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, CellSwitch, Receivers {
+class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, CellSwitcherListener, Receivers {
 
     var signal: SignalHelper = SignalHelper(this)
 
@@ -40,6 +30,19 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
             positionObservers.forEach { o -> o.onPositionChanged(value) }
         }
 
+    var route: RouteResponse? = null
+        set(value) {
+            field = value
+            value?.let { view.onRouteReceived(it.route) }
+        }
+
+    var emergencyRoute: RouteResponse? = null
+        set(value) {
+            field = value
+            value?.let { view.onEmergencyRouteReceived(it.route) }
+        }
+
+
     init {
 //        area = unmarshalArea("")
 //        cell = area!!.cells.filter { c -> c.isEntryPoint }.first()
@@ -47,14 +50,8 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
         positionObservers.add(signal)
         positionObservers.add(view)
+        positionObservers.add(this)
 
-    }
-
-    private fun unmarshalArea(string: String): Area {
-        val moshi: Moshi = Moshi.Builder().build()
-        val jsonAdapter: JsonAdapter<Area> = moshi.adapter(Area::class.java)
-//        return jsonAdapter.fromJson(AreaJson.json) as Area
-        return jsonAdapter.fromJson(string) as Area
     }
 
     override fun onMovementDetected(direction: Direction) {
@@ -64,8 +61,13 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         cell?.let {
             if (MovementHelper.isMovementLegit(tempPosition, (cell as CellForCell).infoCell.roomVertices, (cell as CellForCell).passages)) {
                 position = tempPosition
-
             }
+        }
+    }
+
+    override fun onPositionChanged(userPosition: Point) {
+        if (route?.route?.last()?.id == cell?.infoCell?.id) {
+            view.onRouteFollowedUntilEnd()
         }
     }
 
@@ -74,22 +76,37 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onConnectMessageReceived(text: String?) {
-        Log.d("onConnectMessageReceived: received message $text")
-
-        text?.let { onAreaUpdated(unmarshalArea(it)) }
+        Log.d("onConnectMessageReceived: received message")
+        text?.let {
+            if (text != "ack") {
+                onAreaUpdated(Unmarshalers.unmarshalArea(it))
+                cell = area?.cells?.filter(CellForCell::isEntryPoint)?.first()
+            } else {
+                cell = area?.cells?.filter { (infoCell) -> infoCell.id == signal.bestNewCandidate.id }?.first()
+                Log.d("onConnectMessageReceived: " + cell?.infoCell?.id)
+            }
+        }
     }
 
     override fun onAlarmMessageReceived(text: String?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        text?.let { emergencyRoute = Unmarshalers.unmarshalMap(it) }
+    }
+
+    override fun onRouteMessageReceived(text: String?) {
+        text?.let { route = Unmarshalers.unmarshalMap(it) }
     }
 
     fun askConnection() {
         val msg = if (area == null) "firstconnection" else "connect"
         webSocketHelper.connectWS.send(msg)
-        Log.d("askConnection: sent message $msg")
     }
 
-    override fun switchToCell(cell: InfoCell) {
-        TODO()
+    fun askRoute() {
+        Log.d("askRoute: ${area!!.cells.first().infoCell.id}-${area!!.cells.last().infoCell.id}")
+        area?.let { webSocketHelper.routeWS.send("${it.cells.first().infoCell.id}-${it.cells.last().infoCell.id}") }
+    }
+
+    override fun onSwitchToCellRequested(cell: InfoCell) {
+        webSocketHelper.handleSwitch(cell)
     }
 }

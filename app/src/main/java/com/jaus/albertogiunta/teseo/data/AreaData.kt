@@ -18,9 +18,6 @@ data class Passage(val neighborId: Int,
                    val startCoordinates: Point,
                    val endCoordinates: Point)
 
-//data class Sensor(val category: Int,
-//                  val value: Double)
-
 data class CellForCell(val infoCell: InfoCell,
                        val neighbors: List<InfoCell>,
                        val passages: List<Passage>,
@@ -31,16 +28,17 @@ data class CellForCell(val infoCell: InfoCell,
 data class Area(val id: Int,
                 val cells: List<CellForCell>)
 
-//data class Cell(val infoCell: InfoCell,
-//                val sensors: List<Sensor>,
-//                val neighbors: List<InfoCell>,
-//                val passages: List<Passage>,
-//                val isEntryPoint: Boolean,
-//                val isExitPoint: Boolean,
-//                val capacity: Int,
-//                val squareMeters: Double,
-//                val currentPeople: Int,
-//                val practicabilityLevel: Double)
-//
-//data class Area(val id: Int,
-//                val cells: List<Cell>)
+
+data class RouteRequestLight(val userID: String,
+                             val fromCellId: Int,
+                             val toCellId: Int)
+
+data class RouteRequest(val userID: String,
+                        val fromCell: InfoCell,
+                        val toCell: InfoCell)
+
+data class RouteResponse(val request: RouteRequest,
+                         val route: List<InfoCell>)
+
+data class EscapeResponse(val info: InfoCell,
+                          val route: List<InfoCell>)
