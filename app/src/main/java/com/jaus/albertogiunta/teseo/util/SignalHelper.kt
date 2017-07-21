@@ -15,8 +15,7 @@ class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, Cel
     lateinit var bestNewCandidate: InfoCell
 
     override fun onPositionChanged(userPosition: Point) {
-        Log.d("update: riceived new userPosition! " + userPosition)
-
+//        Log.d("update: riceived new userPosition! " + userPosition)
         when (calculateSignalStrength(userPosition)) {
             LOW -> bestNewCandidate = getNewBestCandidate(cell.neighbors, userPosition)
             VERY_LOW -> connectToNextBestCandidate()
@@ -29,11 +28,11 @@ class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, Cel
     }
 
     private fun calculateSignalStrength(userPosition: Point): SIGNAL_STRENGTH {
-        return when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.infoCell.roomVertices, 2)) {
+        return when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 2)) {
             true -> STRONG
-            false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.infoCell.roomVertices, 1)) {
+            false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 1)) {
                 true -> MEDIUM
-                false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.infoCell.roomVertices, 0)) {
+                false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 0)) {
                     true -> LOW
                     false -> VERY_LOW
                 }

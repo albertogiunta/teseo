@@ -18,12 +18,12 @@ data class Passage(val neighborId: Int,
                    val startCoordinates: Point,
                    val endCoordinates: Point)
 
-data class CellForCell(val infoCell: InfoCell,
+data class CellForCell(val info: InfoCell,
                        val neighbors: List<InfoCell>,
                        val passages: List<Passage>,
                        val isEntryPoint: Boolean,
                        val isExitPoint: Boolean,
-                       val practicabilityLevel: Double)
+                       val practicability: Double)
 
 data class Area(val id: Int,
                 val cells: List<CellForCell>)
@@ -40,5 +40,4 @@ data class RouteRequest(val userID: String,
 data class RouteResponse(val request: RouteRequest,
                          val route: List<InfoCell>)
 
-data class EscapeResponse(val info: InfoCell,
-                          val route: List<InfoCell>)
+data class RouteResponseShort(val route: List<InfoCell>)

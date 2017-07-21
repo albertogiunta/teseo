@@ -104,6 +104,7 @@ class BaseWebSocket(address: String, val onMessageListener: (text: String?) -> U
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
+        Log.d("onMessage: received message")
         onMessageListener(text)
     }
 }

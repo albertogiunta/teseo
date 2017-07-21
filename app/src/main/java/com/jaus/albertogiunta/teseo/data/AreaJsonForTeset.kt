@@ -86,7 +86,7 @@ object AreaJsonForTeset {
 //            "            \"capacity\": 100,\n" +
 //            "            \"squareMeters\": 50.0,\n" +
 //            "            \"currentPeople\": 20,\n" +
-//            "            \"practicabilityLevel\": 5.0\n" +
+//            "            \"practicability\": 5.0\n" +
 //            "        },\n" +
 //            "        {\n" +
 //            "            \"infoCell\": {\n" +
@@ -207,7 +207,7 @@ object AreaJsonForTeset {
 //            "            \"capacity\": 30,\n" +
 //            "            \"squareMeters\": 20.0,\n" +
 //            "            \"currentPeople\": 10,\n" +
-//            "            \"practicabilityLevel\": 2.0\n" +
+//            "            \"practicability\": 2.0\n" +
 //            "        },\n" +
 //            "        {\n" +
 //            "            \"infoCell\": {\n" +
@@ -301,7 +301,7 @@ object AreaJsonForTeset {
 //            "            \"capacity\": 30,\n" +
 //            "            \"squareMeters\": 20.0,\n" +
 //            "            \"currentPeople\": 10,\n" +
-//            "            \"practicabilityLevel\": 2.0\n" +
+//            "            \"practicability\": 2.0\n" +
 //            "        }\n" +
 //            "    ]\n" +
 //            "}"

@@ -20,10 +20,26 @@ class MainActivity : View, BaseActivity() {
         btnConnect.setOnClickListener { presenter.askConnection() }
         btnRoute.setOnClickListener { presenter.askRoute() }
 
-        btnUp.setOnClickListener { presenter.onMovementDetected(Direction.NORTH) }
-        btnDown.setOnClickListener { presenter.onMovementDetected(Direction.SOUTH) }
-        btnLeft.setOnClickListener { presenter.onMovementDetected(Direction.WEST) }
-        btnRight.setOnClickListener { presenter.onMovementDetected(Direction.EAST) }
+        btnUp.setOnClickListener {
+            for (i in 0 until 20) {
+                presenter.onMovementDetected(Direction.NORTH)
+            }
+        }
+        btnDown.setOnClickListener {
+            for (i in 0 until 20) {
+                presenter.onMovementDetected(Direction.SOUTH)
+            }
+        }
+        btnLeft.setOnClickListener {
+            for (i in 0 until 20) {
+                presenter.onMovementDetected(Direction.WEST)
+            }
+        }
+        btnRight.setOnClickListener {
+            for (i in 0 until 20) {
+                presenter.onMovementDetected(Direction.EAST)
+            }
+        }
     }
 
     override fun onAreaUpdated(area: Area) {
@@ -39,10 +55,12 @@ class MainActivity : View, BaseActivity() {
     }
 
     override fun onEmergencyRouteReceived(route: List<InfoCell>) {
-        runOnUiThread { drawView.setRoute(route) }
+        runOnUiThread { drawView.setEmergencyRoute(route) }
     }
 
     override fun onRouteFollowedUntilEnd() {
-        runOnUiThread { drawView.invalidateROute() }
+        this.toast("Hai raggiunto la tua destinazione!")
+        runOnUiThread { drawView.invalidateRoute() }
     }
 }
+

@@ -19,7 +19,7 @@ class DrawView : View {
     private var shouldDisplayArea = false
     private var shouldDisplayUser = false
     private var shouldDisplayRoute = false
-    private var shouldEmergencyRoute = false
+    private var shouldDisplayEmergencyRoute = false
     private var paintWalls: Paint = Paint()
     private var paintPassages: Paint = Paint()
     private var paintAntennas: Paint = Paint()
@@ -39,15 +39,15 @@ class DrawView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (shouldDisplayRoute || shouldEmergencyRoute) {
-            if (shouldEmergencyRoute) paintRoute.color = Color.RED
+        if (shouldDisplayRoute || shouldDisplayEmergencyRoute) {
+            if (shouldDisplayEmergencyRoute) paintRoute.color = Color.RED else Color.GREEN
             route.forEachIndexed { index, infoCell ->
                 if (index < route.size - 1) {
                     val stop: InfoCell = route[index + 1]
-                    canvas.drawLine(infoCell.antennaPosition.x.toFloat() * multiplier,
-                            infoCell.antennaPosition.y.toFloat() * multiplier,
-                            stop.antennaPosition.x.toFloat() * multiplier,
-                            stop.antennaPosition.y.toFloat() * multiplier,
+                    canvas.drawLine(infoCell.antennaPosition.x.toFloat(),
+                            infoCell.antennaPosition.y.toFloat(),
+                            stop.antennaPosition.x.toFloat(),
+                            stop.antennaPosition.y.toFloat(),
                             paintRoute)
                 }
             }
@@ -55,30 +55,30 @@ class DrawView : View {
 
         if (shouldDisplayArea) {
             area.cells.forEach { cell ->
-                canvas.drawRect(cell.infoCell.roomVertices.northWest.x.toFloat() * multiplier,
-                        cell.infoCell.roomVertices.northWest.y.toFloat() * multiplier,
-                        cell.infoCell.roomVertices.southEast.x.toFloat() * multiplier,
-                        cell.infoCell.roomVertices.southEast.y.toFloat() * multiplier,
+                canvas.drawRect(cell.info.roomVertices.northWest.x.toFloat(),
+                        cell.info.roomVertices.northWest.y.toFloat(),
+                        cell.info.roomVertices.southEast.x.toFloat(),
+                        cell.info.roomVertices.southEast.y.toFloat(),
                         paintWalls)
 
                 cell.passages.forEach { p ->
-                    canvas.drawLine(p.startCoordinates.x.toFloat() * multiplier,
-                            p.startCoordinates.y.toFloat() * multiplier,
-                            p.endCoordinates.x.toFloat() * multiplier,
-                            p.endCoordinates.y.toFloat() * multiplier,
+                    canvas.drawLine(p.startCoordinates.x.toFloat(),
+                            p.startCoordinates.y.toFloat(),
+                            p.endCoordinates.x.toFloat(),
+                            p.endCoordinates.y.toFloat(),
                             paintPassages)
                 }
 
-                canvas.drawCircle(cell.infoCell.antennaPosition.x.toFloat() * multiplier,
-                        cell.infoCell.antennaPosition.y.toFloat() * multiplier,
+                canvas.drawCircle(cell.info.antennaPosition.x.toFloat(),
+                        cell.info.antennaPosition.y.toFloat(),
                         6f,
                         paintAntennas)
             }
 
             if (shouldDisplayUser) {
-                canvas.drawCircle(position.x.toFloat() * multiplier,
-                        position.y.toFloat() * multiplier,
-                        6f,
+                canvas.drawCircle(position.x.toFloat(),
+                        position.y.toFloat(),
+                        20f,
                         paintUser)
             }
         }
@@ -105,20 +105,24 @@ class DrawView : View {
     }
 
     fun setRoute(route: List<InfoCell>) {
-        this.route = route
-        shouldDisplayRoute = true
-        redraw()
+        if (!shouldDisplayEmergencyRoute) {
+            this.route = route
+            shouldDisplayRoute = true
+            shouldDisplayEmergencyRoute = false
+            redraw()
+        }
     }
 
     fun setEmergencyRoute(route: List<InfoCell>) {
         this.route = route
         shouldDisplayRoute = false
-        shouldEmergencyRoute = true
+        shouldDisplayEmergencyRoute = true
         redraw()
     }
 
-    fun invalidateROute() {
+    fun invalidateRoute() {
         shouldDisplayRoute = false
+        shouldDisplayEmergencyRoute = false
         redraw()
     }
 

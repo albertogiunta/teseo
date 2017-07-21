@@ -6,6 +6,11 @@ import trikita.log.Log
 
 class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, CellSwitcherListener, Receivers {
 
+    companion object {
+        const val FIRST_CONNECTION = "firstconnection"
+        const val NORMAL_CONNECTION = "connect"
+    }
+
     var signal: SignalHelper = SignalHelper(this)
 
     var webSocketHelper = WebSocketHelper(this)
@@ -24,19 +29,19 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
             value?.let { signal.onCellUpdated(it) }
         }
 
-    var position: Point = Point(0, 0)
+    var position: Point = Point(1, 1)
         set(value) {
             field = value
             positionObservers.forEach { o -> o.onPositionChanged(value) }
         }
 
-    var route: RouteResponse? = null
+    var route: RouteResponseShort? = null
         set(value) {
             field = value
             value?.let { view.onRouteReceived(it.route) }
         }
 
-    var emergencyRoute: RouteResponse? = null
+    var emergencyRoute: RouteResponseShort? = null
         set(value) {
             field = value
             value?.let { view.onEmergencyRouteReceived(it.route) }
@@ -55,19 +60,19 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onMovementDetected(direction: Direction) {
-
         val tempPosition = direction.operationOnPoint(position)
-
         cell?.let {
-            if (MovementHelper.isMovementLegit(tempPosition, (cell as CellForCell).infoCell.roomVertices, (cell as CellForCell).passages)) {
+            if (MovementHelper.isMovementLegit(tempPosition, (cell as CellForCell).info.roomVertices, (cell as CellForCell).passages)) {
                 position = tempPosition
             }
         }
     }
 
     override fun onPositionChanged(userPosition: Point) {
-        if (route?.route?.last()?.id == cell?.infoCell?.id) {
+//        Log.d("onPositionChanged: " + route?.route?.last()?.id + " " + cell?.info?.id)
+        if (route?.route?.last()?.id == cell?.info?.id) {
             view.onRouteFollowedUntilEnd()
+            route = null
         }
     }
 
@@ -83,27 +88,29 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
                 cell = area?.cells?.filter(CellForCell::isEntryPoint)?.first()
             } else {
                 cell = area?.cells?.filter { (infoCell) -> infoCell.id == signal.bestNewCandidate.id }?.first()
-                Log.d("onConnectMessageReceived: " + cell?.infoCell?.id)
+                Log.d("onConnectMessageReceived: " + cell?.info?.id)
             }
         }
     }
 
     override fun onAlarmMessageReceived(text: String?) {
-        text?.let { emergencyRoute = Unmarshalers.unmarshalMap(it) }
+        Log.d("onAlarmMessageReceived: received ALARM")
+        text?.let { emergencyRoute = Unmarshalers.unmarshalShort(it) }
     }
 
     override fun onRouteMessageReceived(text: String?) {
-        text?.let { route = Unmarshalers.unmarshalMap(it) }
+        Log.d("onRouteMessageReceived: received ROUTE")
+        text?.let { route = Unmarshalers.unmarshalShort(it) }
     }
 
     fun askConnection() {
-        val msg = if (area == null) "firstconnection" else "connect"
+        val msg = if (area == null) FIRST_CONNECTION else NORMAL_CONNECTION
         webSocketHelper.connectWS.send(msg)
     }
 
     fun askRoute() {
-        Log.d("askRoute: ${area!!.cells.first().infoCell.id}-${area!!.cells.last().infoCell.id}")
-        area?.let { webSocketHelper.routeWS.send("${it.cells.first().infoCell.id}-${it.cells.last().infoCell.id}") }
+        Log.d("askRoute: ${area?.cells?.first()?.info?.id}-${area?.cells?.last()?.info?.id}")
+        area?.let { webSocketHelper.routeWS.send("${it.cells.first().info.id}-${it.cells.last().info.id}") }
     }
 
     override fun onSwitchToCellRequested(cell: InfoCell) {
