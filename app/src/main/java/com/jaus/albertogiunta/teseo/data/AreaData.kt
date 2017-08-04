@@ -2,9 +2,25 @@ package com.jaus.albertogiunta.teseo.data
 
 data class InfoCell(val id: Int,
                     val uri: String,
+                    val port: Int,
                     val name: String,
                     val roomVertices: Coordinates,
                     val antennaPosition: Point)
+
+data class RoomID(val serial: Int,
+                  val name: String)
+
+data class CellInfo(val uri: String,
+                    val port: Int)
+
+data class RoomInfo(val id: RoomID,
+                    val roomVertices: Coordinates,
+                    val antennaPosition: Point,
+                    val isEntryPoint: Boolean,
+                    val isExitPoint: Boolean,
+                    val capacity: Int,
+                    val squareMeters: Double)
+
 
 data class Point(var x: Int,
                  var y: Int) : Any()
@@ -18,16 +34,18 @@ data class Passage(val neighborId: Int,
                    val startCoordinates: Point,
                    val endCoordinates: Point)
 
-data class CellForCell(val info: InfoCell,
-                       val neighbors: List<InfoCell>,
-                       val passages: List<Passage>,
-                       val isEntryPoint: Boolean,
-                       val isExitPoint: Boolean,
-                       val practicability: Double)
+data class RoomViewedFromAUser(val info: RoomInfo,
+                               val cell: CellInfo,
+                               val neighbors: List<RoomID>,
+                               val passages: List<Passage>)
 
-data class Area(val id: Int,
-                val cells: List<CellForCell>)
+data class AreaViewedFromAUser(val id: Int,
+                               val rooms: List<RoomViewedFromAUser>)
 
+//data class Area(val rooms: Map<RoomID, RoomViewedFromAUser>)
+
+data class RCInfo(val room: RoomID,
+                  val cell: CellInfo)
 
 data class RouteRequestLight(val userID: String,
                              val fromCellId: Int,
@@ -40,4 +58,4 @@ data class RouteRequest(val userID: String,
 data class RouteResponse(val request: RouteRequest,
                          val route: List<InfoCell>)
 
-data class RouteResponseShort(val route: List<InfoCell>)
+data class RouteResponseShort(val route: List<RoomID>)

@@ -3,27 +3,35 @@ package com.jaus.albertogiunta.teseo.util
 import com.jaus.albertogiunta.teseo.CellSwitcherListener
 import com.jaus.albertogiunta.teseo.CellUpdateListener
 import com.jaus.albertogiunta.teseo.UserPositionListener
-import com.jaus.albertogiunta.teseo.data.CellForCell
-import com.jaus.albertogiunta.teseo.data.InfoCell
 import com.jaus.albertogiunta.teseo.data.Point
+import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH.*
 import trikita.log.Log
 
+//class SignalHelper(val switch: CellSwitcherListener, val area: AreaViewedFromAUser) : UserPositionListener, CellUpdateListener {
 class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, CellUpdateListener {
 
-    lateinit var cell: CellForCell
-    lateinit var bestNewCandidate: InfoCell
+    lateinit var cell: RoomViewedFromAUser
+    lateinit var bestNewCandidate: RoomViewedFromAUser
 
     override fun onPositionChanged(userPosition: Point) {
 //        Log.d("update: riceived new userPosition! " + userPosition)
-        when (calculateSignalStrength(userPosition)) {
-            LOW -> bestNewCandidate = getNewBestCandidate(cell.neighbors, userPosition)
-            VERY_LOW -> connectToNextBestCandidate()
+
+        try {
+            when (calculateSignalStrength(userPosition)) {
+                LOW -> bestNewCandidate = getNewBestCandidate(Unmarshalers.roomsListFromIDs(cell.neighbors, Unmarshalers.area!!), userPosition)
+                VERY_LOW -> connectToNextBestCandidate()
+            }
+        } catch(e: UninitializedPropertyAccessException) {
+            Log.d("onPositionChanged: got exception because not initialized")
+        } catch (e: NullPointerException) {
+            Log.d("onPositionChanged: got exception while trying to find bestNextCandidate ${cell.neighbors}")
         }
     }
 
-    override fun onCellUpdated(cell: CellForCell) {
+    override fun onCellUpdated(cell: RoomViewedFromAUser) {
         this.cell = cell
+        Log.d("update: received new cell!")
         Log.d("update: received new cell!")
     }
 
@@ -40,8 +48,11 @@ class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, Cel
         }
     }
 
-    private fun getNewBestCandidate(candidates: List<InfoCell>, userPosition: Point): InfoCell {
-        return candidates.map { it -> Pair(it, DistanceHelper.calculateDistanceBetweenPoints(userPosition, it.antennaPosition)) }.minBy { it -> it.second }!!.first
+    private fun getNewBestCandidate(candidates: List<RoomViewedFromAUser>, userPosition: Point): RoomViewedFromAUser {
+        return candidates
+                .map { it -> Pair(it, DistanceHelper.calculateDistanceBetweenPoints(userPosition, it.info.antennaPosition)) }
+                .minBy { it -> it.second }!!
+                .first
     }
 
     private fun connectToNextBestCandidate() {

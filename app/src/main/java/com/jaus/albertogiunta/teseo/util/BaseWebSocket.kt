@@ -1,6 +1,6 @@
 package com.jaus.albertogiunta.teseo.util
 
-import com.jaus.albertogiunta.teseo.data.InfoCell
+import com.jaus.albertogiunta.teseo.data.CellInfo
 import com.jaus.albertogiunta.teseo.util.CHANNEL.*
 import okhttp3.*
 import trikita.log.Log
@@ -22,12 +22,13 @@ class WebSocketHelper(val receivers: Receivers) {
     lateinit var alarmWS: CustomWebSocket
     lateinit var routeWS: CustomWebSocket
 
-
     var ip: String = "ws://10.0.2.2"
-    var cellUri: String = ":8080/uri1"
+    //    var ip: String = "ws://192.168.1.107"
+    var cellUri: String = SavedCellUri.uri
         set(value) {
             field = value
             baseAddress = ip + cellUri
+            SavedCellUri.uri = value
             Log.d("Now connecting to $baseAddress")
         }
     var baseAddress: String = ip + cellUri
@@ -48,9 +49,9 @@ class WebSocketHelper(val receivers: Receivers) {
         alarmWS.send("disconnect")
     }
 
-    fun handleSwitch(cell: InfoCell) {
+    fun handleSwitch(cell: CellInfo) {
         disconnectWS()
-        cellUri = cell.uri
+        cellUri = ":${cell.port}/${cell.uri}"
         initWS()
     }
 }

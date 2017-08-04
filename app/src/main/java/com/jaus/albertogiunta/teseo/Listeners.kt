@@ -1,20 +1,20 @@
 package com.jaus.albertogiunta.teseo
 
-import com.jaus.albertogiunta.teseo.data.Area
-import com.jaus.albertogiunta.teseo.data.CellForCell
-import com.jaus.albertogiunta.teseo.data.InfoCell
+import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.data.Point
+import com.jaus.albertogiunta.teseo.data.RoomInfo
+import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.Direction
 
 interface AreaUpdateListener {
 
-    fun onAreaUpdated(area: Area)
+    fun onAreaUpdated(area: AreaViewedFromAUser)
 
 }
 
 interface CellUpdateListener {
 
-    fun onCellUpdated(cell: CellForCell)
+    fun onCellUpdated(cell: RoomViewedFromAUser)
 
 }
 
@@ -32,14 +32,16 @@ interface UserPositionListener {
 
 interface RouteListener {
 
-    fun onRouteReceived(route: List<InfoCell>)
+    fun onRouteReceived(route: List<RoomInfo>)
 
-    fun onEmergencyRouteReceived(route: List<InfoCell>)
+    fun onEmergencyRouteReceived(route: List<RoomInfo>)
 
     fun onRouteFollowedUntilEnd()
 
 }
 
 interface CellSwitcherListener {
-    fun onSwitchToCellRequested(cell: InfoCell)
+
+    fun onSwitchToCellRequested(room: RoomViewedFromAUser)
+
 }
