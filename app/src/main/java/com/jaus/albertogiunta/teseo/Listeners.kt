@@ -5,6 +5,7 @@ import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.Direction
+import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH
 
 interface AreaUpdateListener {
 
@@ -40,8 +41,10 @@ interface RouteListener {
 
 }
 
-interface CellSwitcherListener {
+interface SignalListener {
 
     fun onSwitchToCellRequested(room: RoomViewedFromAUser)
+
+    fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH)
 
 }

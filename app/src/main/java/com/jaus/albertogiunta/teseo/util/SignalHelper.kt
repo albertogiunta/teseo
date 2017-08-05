@@ -1,24 +1,24 @@
 package com.jaus.albertogiunta.teseo.util
 
-import com.jaus.albertogiunta.teseo.CellSwitcherListener
 import com.jaus.albertogiunta.teseo.CellUpdateListener
+import com.jaus.albertogiunta.teseo.R
+import com.jaus.albertogiunta.teseo.SignalListener
 import com.jaus.albertogiunta.teseo.UserPositionListener
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH.*
 import trikita.log.Log
 
-//class SignalHelper(val switch: CellSwitcherListener, val area: AreaViewedFromAUser) : UserPositionListener, CellUpdateListener {
-class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, CellUpdateListener {
+class SignalHelper(val signalListener: SignalListener) : UserPositionListener, CellUpdateListener {
 
     lateinit var cell: RoomViewedFromAUser
     lateinit var bestNewCandidate: RoomViewedFromAUser
 
     override fun onPositionChanged(userPosition: Point) {
-//        Log.d("update: riceived new userPosition! " + userPosition)
-
         try {
-            when (calculateSignalStrength(userPosition)) {
+            val strength: SIGNAL_STRENGTH = calculateSignalStrength(userPosition)
+            signalListener.onSignalStrengthUpdated(strength)
+            when (strength) {
                 LOW -> bestNewCandidate = getNewBestCandidate(Unmarshalers.roomsListFromIDs(cell.neighbors, Unmarshalers.area!!), userPosition)
                 VERY_LOW -> connectToNextBestCandidate()
             }
@@ -30,15 +30,15 @@ class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, Cel
     }
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {
+        Log.d("update: received new cell!")
         this.cell = cell
-        Log.d("update: received new cell!")
-        Log.d("update: received new cell!")
+        this.bestNewCandidate = cell
     }
 
     private fun calculateSignalStrength(userPosition: Point): SIGNAL_STRENGTH {
-        return when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 2)) {
+        return when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 40)) {
             true -> STRONG
-            false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 1)) {
+            false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 20)) {
                 true -> MEDIUM
                 false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 0)) {
                     true -> LOW
@@ -57,10 +57,13 @@ class SignalHelper(val switch: CellSwitcherListener) : UserPositionListener, Cel
 
     private fun connectToNextBestCandidate() {
         Log.d("connectToNextBestCandidate: signal very low")
-        switch.onSwitchToCellRequested(bestNewCandidate)
+        signalListener.onSwitchToCellRequested(bestNewCandidate)
     }
 }
 
-enum class SIGNAL_STRENGTH {
-    STRONG, MEDIUM, NORMAL, LOW, VERY_LOW
+enum class SIGNAL_STRENGTH(val tint: Int) {
+    STRONG(R.color.signal_strong),
+    MEDIUM(R.color.signal_medium),
+    LOW(R.color.signal_low),
+    VERY_LOW(R.color.signal_neutral)
 }

@@ -50,7 +50,7 @@
       ],
       "passages": [
         {
-          "neighborId": 0,
+          "neighborId": -1,
           "startCoordinates": {
             "x": 100,
             "y": 140

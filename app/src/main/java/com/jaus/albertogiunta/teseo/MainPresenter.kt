@@ -10,7 +10,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.stream.Collectors
 
-class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, CellSwitcherListener, Receivers {
+class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, SignalListener, Receivers, CellUpdateListener {
 
     companion object {
         const val FIRST_CONNECTION = "firstconnection"
@@ -40,11 +40,12 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         }
 
     var positionObservers: MutableList<UserPositionListener> = mutableListOf()
+    var cellObservers: MutableList<CellUpdateListener> = mutableListOf()
 
     var cell: RoomViewedFromAUser? = null
         set(value) {
             field = value
-            value?.let { signal.onCellUpdated(it) }
+            value?.let { cellObservers.forEach { o -> o.onCellUpdated(it) } }
         }
 
     var position: Point = Point(1, 1)
@@ -67,6 +68,8 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
 
     init {
+        cellObservers.add(this)
+        cellObservers.add(signal)
         positionObservers.add(signal)
         positionObservers.add(view)
         positionObservers.add(this)
@@ -93,6 +96,10 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
         this.area = area
+    }
+
+    override fun onCellUpdated(cell: RoomViewedFromAUser) {
+        view.onCellUpdated(cell.info.id.name)
     }
 
     override fun onConnectMessageReceived(text: String?) {
@@ -136,5 +143,9 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
         // use in production
 //        webSocketHelper.handleSwitch(room.cell)
+    }
+
+    override fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH) {
+        view.onSignalStrengthUpdated(strength)
     }
 }
