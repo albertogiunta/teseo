@@ -7,21 +7,24 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
+import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.Direction
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.first_open_layout.*
 import kotlinx.android.synthetic.main.normal_navigation_layout.*
+import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk25.coroutines.onClick
 
-interface View : AreaUpdateListener, UserPositionListener, RouteListener {
+
+interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener {
     fun context(): Context
 
     fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH)
-
-    fun onCellUpdated(name: String)
 }
 
 class MainActivity : View, BaseActivity() {
@@ -39,9 +42,9 @@ class MainActivity : View, BaseActivity() {
         presenter = MainPresenter(this)
 
         btnFirstConnect.setOnClickListener {
-            presenter.askConnection()
-            layoutFirst.visibility = android.view.View.GONE
-            layoutSecond.visibility = android.view.View.VISIBLE
+            //            presenter.askConnection()
+//            layoutFirst.visibility = android.view.View.GONE
+//            layoutSecond.visibility = android.view.View.VISIBLE
 //            startActivityForResult(Intent(this, QRReaderActivity::class.java), 1)
         }
 
@@ -50,7 +53,9 @@ class MainActivity : View, BaseActivity() {
 //            startActivityForResult(Intent(this, QRReaderActivity::class.java), 1)
         }
 
-        btnRoute.setOnClickListener { presenter.askRoute() }
+        btnRoute.setOnClickListener {
+            showDialog()
+        }
 
         val maxStepsAtOnce = 20
         btnUp.setOnClickListener {
@@ -85,32 +90,82 @@ class MainActivity : View, BaseActivity() {
     }
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
-        runOnUiThread { drawView.setNewArea(area) }
+        runOnUiThread {
+            drawView.setNewArea(area)
+            btnRoute.visibility = android.view.View.VISIBLE
+        }
     }
 
     override fun onPositionChanged(userPosition: Point) {
         runOnUiThread { drawView.setUserPosition(userPosition) }
     }
 
-    override fun onRouteReceived(route: List<RoomInfo>) {
-        runOnUiThread { drawView.setRoute(route) }
-    }
-
-    override fun onEmergencyRouteReceived(route: List<RoomInfo>) {
-        runOnUiThread { drawView.setEmergencyRoute(route) }
+    override fun onRouteReceived(route: List<RoomInfo>, isEmergency: Boolean) {
+        runOnUiThread {
+            drawView.setRoute(route, isEmergency)
+            if (isEmergency) tvEmergencyMode.visibility = android.view.View.VISIBLE
+        }
     }
 
     override fun onRouteFollowedUntilEnd() {
-        this.toast("You reached your destination!")
-        runOnUiThread { drawView.invalidateRoute() }
+        runOnUiThread {
+            toast("You reached your destination!")
+            drawView.invalidateRoute()
+        }
     }
 
     override fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH) {
         icSignalStrength.setColorFilter(ContextCompat.getColor(this, strength.tint))
     }
 
-    override fun onCellUpdated(name: String) {
-        tvCurrentRoom.text = name
+    override fun onCellUpdated(cell: RoomViewedFromAUser) {
+        runOnUiThread { tvCurrentRoom.text = cell.info.id.name }
+    }
+
+    fun showDialog() {
+
+        val rooms = presenter.area?.rooms?.map { (info) -> info.id.name }
+
+        var departure: String = ""
+        var arrival: String = ""
+
+        alert {
+            title = "Choose your route"
+            positiveButton("GO!") {
+                presenter.askRoute(departure, arrival)
+            }
+            customView {
+                linearLayout {
+                    orientation = LinearLayout.VERTICAL
+                    var tvDep: TextView? = null
+                    var tvArr: TextView? = null
+
+                    button("Choose departure") {
+                        onClick {
+                            selector("Choose the departure room", rooms!!, { _, i ->
+                                departure = rooms[i]
+                                tvDep?.text = "Departure:\t\t $departure"
+                            })
+                        }
+                    }
+                    tvDep = textView {
+                        padding = dip(16)
+                    }
+
+                    button("Choose arrival") {
+                        onClick {
+                            selector("Choose the arrival room", rooms!!, { _, i ->
+                                arrival = rooms[i]
+                                tvArr?.text = "Arrival:\t\t\t\t\t $arrival"
+                            })
+                        }
+                    }
+                    tvArr = textView {
+                        padding = dip(16)
+                    }
+                }
+            }
+        }.show()
     }
 }
 

@@ -1,12 +1,5 @@
 package com.jaus.albertogiunta.teseo.data
 
-data class InfoCell(val id: Int,
-                    val uri: String,
-                    val port: Int,
-                    val name: String,
-                    val roomVertices: Coordinates,
-                    val antennaPosition: Point)
-
 data class RoomID(val serial: Int,
                   val name: String)
 
@@ -41,21 +34,5 @@ data class RoomViewedFromAUser(val info: RoomInfo,
 
 data class AreaViewedFromAUser(val id: Int,
                                val rooms: List<RoomViewedFromAUser>)
-
-//data class Area(val rooms: Map<RoomID, RoomViewedFromAUser>)
-
-data class RCInfo(val room: RoomID,
-                  val cell: CellInfo)
-
-data class RouteRequestLight(val userID: String,
-                             val fromCellId: Int,
-                             val toCellId: Int)
-
-data class RouteRequest(val userID: String,
-                        val fromCell: InfoCell,
-                        val toCell: InfoCell)
-
-data class RouteResponse(val request: RouteRequest,
-                         val route: List<InfoCell>)
 
 data class RouteResponseShort(val route: List<RoomID>)

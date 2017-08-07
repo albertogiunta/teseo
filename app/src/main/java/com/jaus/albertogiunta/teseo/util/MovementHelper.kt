@@ -13,7 +13,8 @@ object MovementHelper {
         if (DistanceHelper.doesPointLieInsideRectangle(position, roomVertices, padding)) {
             return true
         } else {
-            passages.forEach { (_, startCoordinates, endCoordinates) ->
+            passages.filter { (neighborId) -> neighborId != -1 }
+                    .forEach { (_, startCoordinates, endCoordinates) ->
                 if (DistanceHelper.doesPointLieOnLine(startCoordinates, endCoordinates, position)) {
                     return true
                 }
@@ -34,12 +35,12 @@ object DistanceHelper {
     fun doesPointLieInsideRectangle(point: Point, vertices: Coordinates, padding: Int): Boolean {
         val a = point.y >= vertices.northWest.y + padding && // if under top border
                 point.y <= vertices.southWest.y - padding && // if above of bottom border
-                point.x <= vertices.northEast.x - padding &&    // if on the left of right border
+                point.x <= vertices.northEast.x - padding && // if on the left of right border
                 point.x >= vertices.northWest.x + padding       // if on the right of left border
         return a
     }
 
-   fun doesPointLieOnLine(a: Point, b: Point, point: Point): Boolean {
+    fun doesPointLieOnLine(a: Point, b: Point, point: Point): Boolean {
         return DistanceHelper.calculateDistanceBetweenPoints(a, point) + DistanceHelper.calculateDistanceBetweenPoints(point, b) < DistanceHelper.calculateDistanceBetweenPoints(a, b) + allowance
     }
 }

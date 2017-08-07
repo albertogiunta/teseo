@@ -19,7 +19,7 @@ class DrawView : View {
     private var shouldDisplayArea = false
     private var shouldDisplayUser = false
     private var shouldDisplayRoute = false
-    private var shouldDisplayEmergencyRoute = false
+    private var isEmergencyModeOn = false
     private var paintWalls: Paint = Paint()
     private var paintPassages: Paint = Paint()
     private var paintAntennas: Paint = Paint()
@@ -61,8 +61,7 @@ class DrawView : View {
                         paintAntennas)
             }
 
-            if (shouldDisplayRoute || shouldDisplayEmergencyRoute) {
-                if (shouldDisplayEmergencyRoute) paintRoute.color = Color.RED else Color.GREEN
+            if (shouldDisplayRoute) {
                 route.forEachIndexed { index, infoCell ->
                     if (index < route.size - 1) {
                         val stop: RoomInfo = route[index + 1]
@@ -104,25 +103,19 @@ class DrawView : View {
         redraw()
     }
 
-    fun setRoute(route: List<RoomInfo>) {
-        if (!shouldDisplayEmergencyRoute) {
-            this.route = route
+    fun setRoute(route: List<RoomInfo>, isEmergency: Boolean) {
+        if (isEmergency || (!isEmergency && !isEmergencyModeOn)) {
+            if (isEmergency) paintRoute.color = Color.RED else Color.GREEN
+            isEmergencyModeOn = isEmergency
             shouldDisplayRoute = true
-            shouldDisplayEmergencyRoute = false
+            this.route = route
             redraw()
         }
     }
 
-    fun setEmergencyRoute(route: List<RoomInfo>) {
-        this.route = route
-        shouldDisplayRoute = false
-        shouldDisplayEmergencyRoute = true
-        redraw()
-    }
-
     fun invalidateRoute() {
+        isEmergencyModeOn = false
         shouldDisplayRoute = false
-        shouldDisplayEmergencyRoute = false
         redraw()
     }
 

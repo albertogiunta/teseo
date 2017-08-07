@@ -21,10 +21,12 @@ class WebSocketHelper(val receivers: Receivers) {
     lateinit var connectWS: CustomWebSocket
     lateinit var alarmWS: CustomWebSocket
     lateinit var routeWS: CustomWebSocket
+    var isSwitchingAvailable = true
 
-    var ip: String = "ws://10.0.2.2"
-    //    var ip: String = "ws://192.168.1.107"
-    var cellUri: String = SavedCellUri.uri
+    //    var ip: String = "ws://10.0.2.2" // uncomment when using emulator
+    var ip: String = "ws://192.168.1.107"
+    var cellUri: String = ":8081/uri1"
+//    var cellUri: String = SavedCellUri.uri // uncomment when using camera qrcode
         set(value) {
             field = value
             baseAddress = ip + cellUri
@@ -50,9 +52,11 @@ class WebSocketHelper(val receivers: Receivers) {
     }
 
     fun handleSwitch(cell: CellInfo) {
-        disconnectWS()
-        cellUri = ":${cell.port}/${cell.uri}"
-        initWS()
+        if (isSwitchingAvailable) {
+            disconnectWS()
+            cellUri = ":${cell.port}/${cell.uri}"
+            initWS()
+        }
     }
 }
 
@@ -93,7 +97,7 @@ class BaseWebSocket(address: String, val onMessageListener: (text: String?) -> U
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String?) {
         webSocket.close(1000, null)
-        System.out.println("CLOSE: $code $reason")
+        Log.d("CLOSE: $code $reason")
     }
 
     override fun onFailure(webSocket: WebSocket?, t: Throwable, response: Response?) {

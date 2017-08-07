@@ -33,9 +33,7 @@ interface UserPositionListener {
 
 interface RouteListener {
 
-    fun onRouteReceived(route: List<RoomInfo>)
-
-    fun onEmergencyRouteReceived(route: List<RoomInfo>)
+    fun onRouteReceived(route: List<RoomInfo>, isEmergency: Boolean)
 
     fun onRouteFollowedUntilEnd()
 

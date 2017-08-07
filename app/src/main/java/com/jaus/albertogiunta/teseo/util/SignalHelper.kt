@@ -65,5 +65,5 @@ enum class SIGNAL_STRENGTH(val tint: Int) {
     STRONG(R.color.signal_strong),
     MEDIUM(R.color.signal_medium),
     LOW(R.color.signal_low),
-    VERY_LOW(R.color.signal_neutral)
+    VERY_LOW(R.color.signal_very_low)
 }

@@ -7,5 +7,6 @@
     <color name="signal_strong">#43de38</color>
     <color name="signal_medium">#ffa256</color>
     <color name="signal_low">#f95656</color>
+    <color name="signal_very_low">#ed0000</color>
     <color name="signal_neutral">#b9b9b9</color>
 </resources>
