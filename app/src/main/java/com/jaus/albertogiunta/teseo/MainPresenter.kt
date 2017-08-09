@@ -21,23 +21,6 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     var webSocketHelper = WebSocketHelper(this)
 
-    var area: AreaViewedFromAUser? = null
-        set(value) {
-            field = value
-            value?.let {
-                view.onAreaUpdated(it)
-//                var entryPosition: Point = value
-//                        .rooms.filter { (info) -> info.isEntryPoint }.first()
-//                        .passages.filter { (neighborId) -> neighborId == 0 }
-//                        .map { p -> p.startCoordinates }.first()
-//                entryPosition.x += 1
-                var entryPosition: Point = value
-                        .rooms.filter { (info) -> info.isEntryPoint }.first()
-                        .info.antennaPosition
-                position = entryPosition
-            }
-        }
-
     var positionObservers: MutableList<UserPositionListener> = mutableListOf()
     var cellObservers: MutableList<CellUpdateListener> = mutableListOf()
 
@@ -61,13 +44,13 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     var route: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(Unmarshalers.roomsInfoListFromIDs(it.route, area!!), false) }
+            value?.let { view.onRouteReceived(Unmarshaler.roomsInfoListFromIDs(it.route, AreaState.area!!), false) }
         }
 
     var emergencyRoute: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(Unmarshalers.roomsInfoListFromIDs(it.route, area!!), true) }
+            value?.let { view.onRouteReceived(Unmarshaler.roomsInfoListFromIDs(it.route, AreaState.area!!), true) }
         }
 
 
@@ -101,19 +84,23 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
-        this.area = area
+        view.onAreaUpdated(area)
+        val entryPosition: Point = area
+                .rooms.filter { (info) -> info.isEntryPoint }.first()
+                .info.antennaPosition
+        position = entryPosition
     }
 
     override fun onConnectMessageReceived(text: String?) {
         Log.d("onConnectMessageReceived: received message")
         text?.let {
             if (text == NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
-                cell = area?.rooms?.filter { (infoCell) -> infoCell.id.serial == signal.bestNewCandidate.info.id.serial }?.first()
+                cell = AreaState.area?.rooms?.filter { (infoCell) -> infoCell.id.serial == signal.bestNewCandidate.info.id.serial }?.first()
                 isSwitching = false
                 Log.d("onConnectMessageReceived: cellId" + cell?.info?.id)
             } else if (text != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
-                onAreaUpdated(Unmarshalers.unmarshalArea(it))
-                cell = area?.rooms?.filter({ (info) -> info.isEntryPoint })?.first()
+                onAreaUpdated(Unmarshaler.unmarshalArea(it))
+                cell = AreaState.area?.rooms?.filter({ (info) -> info.isEntryPoint })?.first()
                 Log.d("onConnectMessageReceived: cellId " + cell?.info?.id)
             } else {
                 Log.d("onConnectMessageReceived: $text")
@@ -123,12 +110,12 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     override fun onAlarmMessageReceived(text: String?) {
         Log.d("onAlarmMessageReceived: received ALARM")
-        text?.let { emergencyRoute = Unmarshalers.unmarshalRouteResponse(it) }
+        text?.let { emergencyRoute = Unmarshaler.unmarshalRouteResponse(it) }
     }
 
     override fun onRouteMessageReceived(text: String?) {
         Log.d("onRouteMessageReceived: received ROUTE")
-        text?.let { route = Unmarshalers.unmarshalRouteResponse(it) }
+        text?.let { route = Unmarshaler.unmarshalRouteResponse(it) }
     }
 
     fun askConnection() {
@@ -136,14 +123,14 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 //        if (area == null) onConnectMessageReceived(BufferedReader(InputStreamReader(view.context().resources.openRawResource(R.raw.area))).lines().collect(Collectors.joining("\n")))
 //        else onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
         // use in production
-        webSocketHelper.connectWS.send(if (area == null) FIRST_CONNECTION else NORMAL_CONNECTION)
+        webSocketHelper.connectWS.send(if (AreaState.area == null) FIRST_CONNECTION else NORMAL_CONNECTION)
     }
 
     fun askRoute(departureRoomName: String, arrivalRoomName: String) {
-        val depId: Int = area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()
-        val arrId: Int = area!!.rooms.filter { (info) -> info.id.name == arrivalRoomName }.map { (info) -> info.id.serial }.first()
+        val depId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()
+        val arrId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == arrivalRoomName }.map { (info) -> info.id.serial }.first()
         Log.d("askRoute: uri$depId-uri$arrId")
-        area?.let { webSocketHelper.routeWS.send("uri$depId-uri$arrId") }
+        AreaState.area?.let { webSocketHelper.routeWS.send("uri$depId-uri$arrId") }
     }
 
     override fun onSwitchToCellRequested(room: RoomViewedFromAUser) {
@@ -159,7 +146,7 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     fun isSetupFinished(): Boolean {
-        return area != null &&
+        return AreaState.area != null &&
                 cell != null
     }
 }

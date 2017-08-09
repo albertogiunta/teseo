@@ -23,10 +23,9 @@ class WebSocketHelper(val receivers: Receivers) {
     lateinit var routeWS: CustomWebSocket
     var isSwitchingAvailable = true
 
-    //    var ip: String = "ws://10.0.2.2" // uncomment when using emulator
-    var ip: String = "ws://192.168.1.107"
+    var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://192.168.1.107"
     var cellUri: String = ":8081/uri1"
-//    var cellUri: String = SavedCellUri.uri // uncomment when using camera qrcode
+//    var cellUri: String = SavedCellUri.uri // use this when using camera qr code
         set(value) {
             field = value
             baseAddress = ip + cellUri

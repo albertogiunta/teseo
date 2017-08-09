@@ -13,6 +13,7 @@ import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
+import com.jaus.albertogiunta.teseo.util.AreaState
 import com.jaus.albertogiunta.teseo.util.Direction
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH
 import kotlinx.android.synthetic.main.first_open_layout.*
@@ -27,6 +28,7 @@ interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUp
     fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH)
 }
 
+@Suppress("EXPERIMENTAL_FEATURE_WARNING")
 class MainActivity : View, BaseActivity() {
 
     lateinit var presenter: MainPresenter
@@ -124,7 +126,7 @@ class MainActivity : View, BaseActivity() {
 
     fun showDialog() {
 
-        val rooms = presenter.area?.rooms?.map { (info) -> info.id.name }
+        val rooms = AreaState.area?.rooms?.map { (info) -> info.id.name }
 
         var departure: String = ""
         var arrival: String = ""

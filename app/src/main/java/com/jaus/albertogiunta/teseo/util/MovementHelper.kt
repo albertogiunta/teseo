@@ -8,12 +8,13 @@ object MovementHelper {
 
     val padding = 0
     val step = 1
+    val NEUTRAL_PASSAGE = -1
 
     fun isMovementLegit(position: Point, roomVertices: Coordinates, passages: List<Passage>): Boolean {
         if (DistanceHelper.doesPointLieInsideRectangle(position, roomVertices, padding)) {
             return true
         } else {
-            passages.filter { (neighborId) -> neighborId != -1 }
+            passages.filter { (neighborId) -> neighborId != NEUTRAL_PASSAGE }
                     .forEach { (_, startCoordinates, endCoordinates) ->
                 if (DistanceHelper.doesPointLieOnLine(startCoordinates, endCoordinates, position)) {
                     return true

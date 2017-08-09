@@ -19,7 +19,9 @@ class SignalHelper(val signalListener: SignalListener) : UserPositionListener, C
             val strength: SIGNAL_STRENGTH = calculateSignalStrength(userPosition)
             signalListener.onSignalStrengthUpdated(strength)
             when (strength) {
-                LOW -> bestNewCandidate = getNewBestCandidate(Unmarshalers.roomsListFromIDs(cell.neighbors, Unmarshalers.area!!), userPosition)
+                STRONG -> Unit
+                MEDIUM -> Unit
+                LOW -> bestNewCandidate = getNewBestCandidate(Unmarshaler.roomsListFromIDs(cell.neighbors, AreaState.area!!), userPosition)
                 VERY_LOW -> connectToNextBestCandidate()
             }
         } catch(e: UninitializedPropertyAccessException) {
