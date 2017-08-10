@@ -6,14 +6,12 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
+import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 
 class DrawView : View {
 
-    private val multiplier = 20
-    private lateinit var area: AreaViewedFromAUser
     private lateinit var position: Point
     private lateinit var route: List<RoomInfo>
     private var shouldDisplayArea = false
@@ -40,7 +38,7 @@ class DrawView : View {
         super.onDraw(canvas)
 
         if (shouldDisplayArea) {
-            area.rooms.forEach { cell ->
+            AreaState.area?.rooms?.forEach { cell ->
                 canvas.drawRect(cell.info.roomVertices.northWest.x.toFloat(),
                         cell.info.roomVertices.northWest.y.toFloat(),
                         cell.info.roomVertices.southEast.x.toFloat(),
@@ -83,27 +81,18 @@ class DrawView : View {
         }
     }
 
-    private fun createPaint(style: Paint.Style, strokeWidth: Float, color: Int): Paint {
-        val p: Paint = Paint()
-        p.style = style
-        p.strokeWidth = strokeWidth
-        p.color = color
-        return p
-    }
-
-    fun setNewArea(newArea: AreaViewedFromAUser) {
-        this.area = newArea
+    fun drawArea() {
         shouldDisplayArea = true
         redraw()
     }
 
-    fun setUserPosition(position: Point) {
+    fun drawUserPosition(position: Point) {
         this.position = position
         shouldDisplayUser = true
         redraw()
     }
 
-    fun setRoute(route: List<RoomInfo>, isEmergency: Boolean) {
+    fun drawRoute(route: List<RoomInfo>, isEmergency: Boolean) {
         if (isEmergency || (!isEmergency && !isEmergencyModeOn)) {
             if (isEmergency) paintRoute.color = Color.RED else Color.GREEN
             isEmergencyModeOn = isEmergency
@@ -113,10 +102,18 @@ class DrawView : View {
         }
     }
 
-    fun invalidateRoute() {
+    fun undrowRoute() {
         isEmergencyModeOn = false
         shouldDisplayRoute = false
         redraw()
+    }
+
+    private fun createPaint(style: Paint.Style, strokeWidth: Float, color: Int): Paint {
+        val p: Paint = Paint()
+        p.style = style
+        p.strokeWidth = strokeWidth
+        p.color = color
+        return p
     }
 
     private fun redraw() {

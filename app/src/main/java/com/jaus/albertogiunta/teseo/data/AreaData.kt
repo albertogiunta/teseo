@@ -1,5 +1,11 @@
 package com.jaus.albertogiunta.teseo.data
 
+object AreaState {
+
+    var area: AreaViewedFromAUser? = null
+
+}
+
 data class RoomID(val serial: Int,
                   val name: String)
 

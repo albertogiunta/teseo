@@ -1,6 +1,7 @@
 package com.jaus.albertogiunta.teseo.util
 
 import com.jaus.albertogiunta.teseo.MainPresenter
+import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.CellInfo
 import com.jaus.albertogiunta.teseo.util.CHANNEL.*
 import okhttp3.*
@@ -24,7 +25,6 @@ interface WSMessageCallbacks {
      * Received without it being requested (push notification kind of thing)
      *
      * @param alarmMessage is a list of RoomIDs
-     * @see RoomID
      */
     fun onAlarmMessageReceived(alarmMessage: String?)
 

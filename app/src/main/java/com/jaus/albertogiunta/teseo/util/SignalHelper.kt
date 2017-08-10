@@ -2,14 +2,15 @@ package com.jaus.albertogiunta.teseo.util
 
 import com.jaus.albertogiunta.teseo.CellUpdateListener
 import com.jaus.albertogiunta.teseo.R
-import com.jaus.albertogiunta.teseo.SignalListener
+import com.jaus.albertogiunta.teseo.SignalAndCellSwitchingListener
 import com.jaus.albertogiunta.teseo.UserPositionListener
+import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH.*
 import trikita.log.Log
 
-class SignalHelper(val signalListener: SignalListener) : UserPositionListener, CellUpdateListener {
+class SignalHelper(val signalListener: SignalAndCellSwitchingListener) : UserPositionListener, CellUpdateListener {
 
     lateinit var cell: RoomViewedFromAUser
     lateinit var bestNewCandidate: RoomViewedFromAUser
@@ -21,7 +22,7 @@ class SignalHelper(val signalListener: SignalListener) : UserPositionListener, C
             when (strength) {
                 STRONG -> Unit
                 MEDIUM -> Unit
-                LOW -> bestNewCandidate = getNewBestCandidate(Unmarshaler.roomsListFromIDs(cell.neighbors, AreaState.area!!), userPosition)
+                LOW -> bestNewCandidate = getNewBestCandidate(IDExtractor.roomsListFromIDs(cell.neighbors, AreaState.area!!), userPosition)
                 VERY_LOW -> connectToNextBestCandidate()
             }
         } catch(e: UninitializedPropertyAccessException) {
@@ -32,7 +33,7 @@ class SignalHelper(val signalListener: SignalListener) : UserPositionListener, C
     }
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {
-        Log.d("update: received new cell!")
+        Log.d("onCellUpdated: received new cell!")
         this.cell = cell
         this.bestNewCandidate = cell
     }

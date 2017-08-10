@@ -8,7 +8,6 @@ import github.nisrulz.qreader.QREader
 import kotlinx.android.synthetic.main.activity_qrreader.*
 import trikita.log.Log
 
-
 class QRReaderActivity : AppCompatActivity() {
 
     private var qReader: QREader? = null

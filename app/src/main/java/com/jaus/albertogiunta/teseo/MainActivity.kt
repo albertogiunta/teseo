@@ -9,11 +9,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.data.RoomInfo
-import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.util.AreaState
+import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.util.Direction
 import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH
 import kotlinx.android.synthetic.main.first_open_layout.*
@@ -22,16 +18,19 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
-interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener {
+interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener, SignalListener {
+
+    /**
+     * Get the view context
+     */
     fun context(): Context
 
-    fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH)
 }
 
 @Suppress("EXPERIMENTAL_FEATURE_WARNING")
 class MainActivity : View, BaseActivity() {
 
-    lateinit var presenter: MainPresenter
+    private lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +55,7 @@ class MainActivity : View, BaseActivity() {
         }
 
         btnRoute.setOnClickListener {
-            showDialog()
+            showRouteDialog()
         }
 
         val maxStepsAtOnce = 20
@@ -93,18 +92,18 @@ class MainActivity : View, BaseActivity() {
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
         runOnUiThread {
-            drawView.setNewArea(area)
+            drawView.drawArea()
             btnRoute.visibility = android.view.View.VISIBLE
         }
     }
 
     override fun onPositionChanged(userPosition: Point) {
-        runOnUiThread { drawView.setUserPosition(userPosition) }
+        runOnUiThread { drawView.drawUserPosition(userPosition) }
     }
 
     override fun onRouteReceived(route: List<RoomInfo>, isEmergency: Boolean) {
         runOnUiThread {
-            drawView.setRoute(route, isEmergency)
+            drawView.drawRoute(route, isEmergency)
             if (isEmergency) tvEmergencyMode.visibility = android.view.View.VISIBLE
         }
     }
@@ -112,7 +111,7 @@ class MainActivity : View, BaseActivity() {
     override fun onRouteFollowedUntilEnd() {
         runOnUiThread {
             toast("You reached your destination!")
-            drawView.invalidateRoute()
+            drawView.undrowRoute()
         }
     }
 
@@ -124,7 +123,7 @@ class MainActivity : View, BaseActivity() {
         runOnUiThread { tvCurrentRoom.text = cell.info.id.name }
     }
 
-    fun showDialog() {
+    private fun showRouteDialog() {
 
         val rooms = AreaState.area?.rooms?.map { (info) -> info.id.name }
 

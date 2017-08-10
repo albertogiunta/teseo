@@ -1,13 +1,10 @@
 package com.jaus.albertogiunta.teseo
 
-import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.data.RouteResponseShort
+import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.util.*
 import trikita.log.Log
 
-class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, SignalListener, WSMessageCallbacks {
+class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, SignalAndCellSwitchingListener, WSMessageCallbacks {
 
     companion object {
         const val FIRST_CONNECTION = "firstConnection"
@@ -22,6 +19,7 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     var webSocketHelper = WebSocketHelper(this)
 
+    var signalObservers: MutableList<SignalListener> = mutableListOf()
     var positionObservers: MutableList<UserPositionListener> = mutableListOf()
     var cellObservers: MutableList<CellUpdateListener> = mutableListOf()
 
@@ -45,17 +43,18 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     var route: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(Unmarshaler.roomsInfoListFromIDs(it.route, AreaState.area!!), false) }
+            value?.let { view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(it.route, AreaState.area!!), false) }
         }
 
     var emergencyRoute: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(Unmarshaler.roomsInfoListFromIDs(it.route, AreaState.area!!), true) }
+            value?.let { view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(it.route, AreaState.area!!), true) }
         }
 
 
     init {
+        signalObservers.add(view)
         cellObservers.add(view)
         cellObservers.add(signal)
         positionObservers.add(this)
@@ -119,21 +118,6 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         routeMessage?.let { route = Unmarshaler.unmarshalRouteResponse(it) }
     }
 
-    fun askConnection() {
-        // use for test
-//        if (area == null) onConnectMessageReceived(BufferedReader(InputStreamReader(view.context().resources.openRawResource(R.raw.area))).lines().collect(Collectors.joining("\n")))
-//        else onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
-        // use in production
-        webSocketHelper.connectWS.send(if (AreaState.area == null) FIRST_CONNECTION else NORMAL_CONNECTION)
-    }
-
-    fun askRoute(departureRoomName: String, arrivalRoomName: String) {
-        val depId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()
-        val arrId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == arrivalRoomName }.map { (info) -> info.id.serial }.first()
-        Log.d("askRoute: uri$depId-uri$arrId")
-        AreaState.area?.let { webSocketHelper.routeWS.send("uri$depId-uri$arrId") }
-    }
-
     override fun onSwitchToCellRequested(room: RoomViewedFromAUser) {
         // use for test
 //        onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
@@ -143,10 +127,31 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH) {
-        view.onSignalStrengthUpdated(strength)
+        signalObservers.forEach({ o -> o.onSignalStrengthUpdated(strength) })
     }
 
-    fun isSetupFinished(): Boolean {
+    /**
+     * Tells the appropriate websocket to connect, either for the first time or when the connection is lost
+     */
+    fun askConnection() {
+        // use for test
+//        if (area == null) onConnectMessageReceived(BufferedReader(InputStreamReader(view.context().resources.openRawResource(R.raw.area))).lines().collect(Collectors.joining("\n")))
+//        else onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
+        // use in production
+        webSocketHelper.connectWS.send(if (AreaState.area == null) FIRST_CONNECTION else NORMAL_CONNECTION)
+    }
+
+    /**
+     * Contacts the websocket and tells it to ask for the specified route
+     */
+    fun askRoute(departureRoomName: String, arrivalRoomName: String) {
+        val depId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()
+        val arrId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == arrivalRoomName }.map { (info) -> info.id.serial }.first()
+        Log.d("askRoute: uri$depId-uri$arrId")
+        AreaState.area?.let { webSocketHelper.routeWS.send("uri$depId-uri$arrId") }
+    }
+
+    private fun isSetupFinished(): Boolean {
         return AreaState.area != null &&
                 cell != null
     }
