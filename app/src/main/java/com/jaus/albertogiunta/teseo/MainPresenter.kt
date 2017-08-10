@@ -7,11 +7,12 @@ import com.jaus.albertogiunta.teseo.data.RouteResponseShort
 import com.jaus.albertogiunta.teseo.util.*
 import trikita.log.Log
 
-class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, SignalListener, Receivers {
+class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, UserPositionListener, SignalListener, WSMessageCallbacks {
 
     companion object {
-        const val FIRST_CONNECTION = "firstconnection"
-        const val NORMAL_CONNECTION = "connect"
+        const val FIRST_CONNECTION = "firstConnection"
+        const val NORMAL_CONNECTION = "normalConnection"
+        const val DISCONNECTION = "disconnect"
         const val NORMAL_CONNECTION_RESPONSE = "ack"
     }
 
@@ -91,31 +92,31 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         position = entryPosition
     }
 
-    override fun onConnectMessageReceived(text: String?) {
+    override fun onConnectMessageReceived(connectMessage: String?) {
         Log.d("onConnectMessageReceived: received message")
-        text?.let {
-            if (text == NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
+        connectMessage?.let {
+            if (connectMessage == NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
                 cell = AreaState.area?.rooms?.filter { (infoCell) -> infoCell.id.serial == signal.bestNewCandidate.info.id.serial }?.first()
                 isSwitching = false
                 Log.d("onConnectMessageReceived: cellId" + cell?.info?.id)
-            } else if (text != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
+            } else if (connectMessage != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
                 onAreaUpdated(Unmarshaler.unmarshalArea(it))
                 cell = AreaState.area?.rooms?.filter({ (info) -> info.isEntryPoint })?.first()
                 Log.d("onConnectMessageReceived: cellId " + cell?.info?.id)
             } else {
-                Log.d("onConnectMessageReceived: $text")
+                Log.d("onConnectMessageReceived: $connectMessage")
             }
         }
     }
 
-    override fun onAlarmMessageReceived(text: String?) {
+    override fun onAlarmMessageReceived(alarmMessage: String?) {
         Log.d("onAlarmMessageReceived: received ALARM")
-        text?.let { emergencyRoute = Unmarshaler.unmarshalRouteResponse(it) }
+        alarmMessage?.let { emergencyRoute = Unmarshaler.unmarshalRouteResponse(it) }
     }
 
-    override fun onRouteMessageReceived(text: String?) {
+    override fun onRouteMessageReceived(routeMessage: String?) {
         Log.d("onRouteMessageReceived: received ROUTE")
-        text?.let { route = Unmarshaler.unmarshalRouteResponse(it) }
+        routeMessage?.let { route = Unmarshaler.unmarshalRouteResponse(it) }
     }
 
     fun askConnection() {
