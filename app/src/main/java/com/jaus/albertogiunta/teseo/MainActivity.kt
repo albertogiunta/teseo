@@ -58,26 +58,17 @@ class MainActivity : View, BaseActivity() {
             showRouteDialog()
         }
 
-        val maxStepsAtOnce = 20
         btnUp.setOnClickListener {
-            for (i in 0 until maxStepsAtOnce) {
-                presenter.onMovementDetected(Direction.NORTH)
-            }
+            detectedMovement(Direction.NORTH)
         }
         btnDown.setOnClickListener {
-            for (i in 0 until maxStepsAtOnce) {
-                presenter.onMovementDetected(Direction.SOUTH)
-            }
+            detectedMovement(Direction.SOUTH)
         }
         btnLeft.setOnClickListener {
-            for (i in 0 until maxStepsAtOnce) {
-                presenter.onMovementDetected(Direction.WEST)
-            }
+            detectedMovement(Direction.WEST)
         }
         btnRight.setOnClickListener {
-            for (i in 0 until maxStepsAtOnce) {
-                presenter.onMovementDetected(Direction.EAST)
-            }
+            detectedMovement(Direction.EAST)
         }
     }
 
@@ -121,6 +112,14 @@ class MainActivity : View, BaseActivity() {
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {
         runOnUiThread { tvCurrentRoom.text = cell.info.id.name }
+    }
+
+    private fun detectedMovement(direction: Direction) {
+        vibrator.vibrate(20)
+        val maxStepsAtOnce = 20
+        for (i in 0 until maxStepsAtOnce) {
+            presenter.onMovementDetected(direction)
+        }
     }
 
     private fun showRouteDialog() {
