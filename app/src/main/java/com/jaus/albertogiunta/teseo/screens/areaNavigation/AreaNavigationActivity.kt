@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo
+package com.jaus.albertogiunta.teseo.screens.areaNavigation
 
 import android.Manifest
 import android.content.Context
@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.jaus.albertogiunta.teseo.*
 import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.helpers.Direction
 import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH

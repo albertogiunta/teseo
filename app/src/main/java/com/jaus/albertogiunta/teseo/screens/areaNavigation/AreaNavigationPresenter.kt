@@ -1,5 +1,6 @@
-package com.jaus.albertogiunta.teseo
+package com.jaus.albertogiunta.teseo.screens.areaNavigation
 
+import com.jaus.albertogiunta.teseo.*
 import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.helpers.*
 import com.jaus.albertogiunta.teseo.networking.WSMessageCallbacks
