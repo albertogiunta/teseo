@@ -4,6 +4,7 @@ import com.jaus.albertogiunta.teseo.MainPresenter
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.CellInfo
 import com.jaus.albertogiunta.teseo.helpers.SavedCellUri
+import com.jaus.albertogiunta.teseo.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.util.EmulatorUtils
 import okhttp3.*
 import trikita.log.Log

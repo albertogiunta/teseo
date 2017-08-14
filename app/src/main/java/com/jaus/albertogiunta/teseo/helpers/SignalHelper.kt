@@ -7,6 +7,7 @@ import com.jaus.albertogiunta.teseo.UserPositionListener
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
+import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH.*
 import com.jaus.albertogiunta.teseo.util.IDExtractor
 import trikita.log.Log
 
