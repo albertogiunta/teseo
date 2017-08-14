@@ -27,7 +27,7 @@ class DrawView : View {
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-        paintWalls = createPaint(Paint.Style.STROKE, 3f, Color.GREEN)
+        paintWalls = createPaint(Paint.Style.STROKE, 3f, Color.WHITE)
         paintPassages = createPaint(Paint.Style.STROKE, 5f, Color.DKGRAY)
         paintAntennas = createPaint(Paint.Style.STROKE, 5f, Color.WHITE)
         paintUser = createPaint(Paint.Style.FILL, 10f, Color.CYAN)

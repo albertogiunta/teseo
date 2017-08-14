@@ -9,4 +9,10 @@
     <color name="signal_low">#f95656</color>
     <color name="signal_very_low">#ed0000</color>
     <color name="signal_neutral">#7e1b1b</color>
+
+    <!--<color name="GradientStrokeBorder">-->
+    <!--<item name="android:startColor">#ffe052a0</item>-->
+    <!--<item name="android:endColor">#fff15c41</item>-->
+    <!--<item name="android:angle">145</item>-->
+    <!--</color>-->
 </resources>

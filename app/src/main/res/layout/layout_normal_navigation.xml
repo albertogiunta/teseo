@@ -8,7 +8,7 @@
         tools:context="com.jaus.albertogiunta.teseo.screens.areaNavigation.MainActivity"
         tools:layout_editor_absoluteY="81dp"
         tools:layout_editor_absoluteX="0dp"
-        android:background="#434343"
+        android:background="@drawable/ic_background_gradient"
         >
 
     <ImageButton
@@ -169,29 +169,29 @@
             />
     <TextView
             android:textColor="#fff"
-            android:text="and Signal is"
+            android:text="Signal is "
             android:fontFamily="monospace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvTextSignal"
             android:layout_marginStart="8dp"
-            app:layout_constraintLeft_toRightOf="@+id/tvCurrentRoom"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@+id/drawView"
+            app:layout_constraintRight_toLeftOf="@+id/tvSignalStrength"
+            android:layout_marginRight="8dp"
             />
     <TextView
             android:textColor="#fff"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:id="@+id/tvSignalStrength"
-            app:layout_constraintLeft_toRightOf="@+id/tvTextSignal"
             android:text="---"
             android:textStyle="bold"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="32dp"
             android:fontFamily="monospace"
             app:layout_constraintTop_toBottomOf="@+id/drawView"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
             />
     <TextView
             android:textColor="#fff"
