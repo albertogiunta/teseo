@@ -1,13 +1,13 @@
-package com.jaus.albertogiunta.teseo.util
+package com.jaus.albertogiunta.teseo.helpers
 
+import android.graphics.Color
 import com.jaus.albertogiunta.teseo.CellUpdateListener
-import com.jaus.albertogiunta.teseo.R
 import com.jaus.albertogiunta.teseo.SignalAndCellSwitchingListener
 import com.jaus.albertogiunta.teseo.UserPositionListener
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH.*
+import com.jaus.albertogiunta.teseo.util.IDExtractor
 import trikita.log.Log
 
 class SignalHelper(val signalListener: SignalAndCellSwitchingListener) : UserPositionListener, CellUpdateListener {
@@ -64,9 +64,9 @@ class SignalHelper(val signalListener: SignalAndCellSwitchingListener) : UserPos
     }
 }
 
-enum class SIGNAL_STRENGTH(val tint: Int) {
-    STRONG(R.color.signal_strong),
-    MEDIUM(R.color.signal_medium),
-    LOW(R.color.signal_low),
-    VERY_LOW(R.color.signal_very_low)
+enum class SIGNAL_STRENGTH(val tint: Int, val text: String) {
+    STRONG(Color.GREEN, "STRONG"),
+    MEDIUM(Color.YELLOW, "MEDIUM"),
+    LOW(Color.RED, "LOW"),
+    VERY_LOW(Color.BLACK, "VERY_LOW")
 }

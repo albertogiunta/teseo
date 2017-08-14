@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.util
+package com.jaus.albertogiunta.teseo.customViews
 
 import android.content.Context
 import android.graphics.Canvas
@@ -27,11 +27,11 @@ class DrawView : View {
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-        paintWalls = createPaint(Paint.Style.STROKE, 3f, Color.BLACK)
-        paintPassages = createPaint(Paint.Style.STROKE, 5f, Color.WHITE)
-        paintAntennas = createPaint(Paint.Style.STROKE, 5f, Color.BLACK)
-        paintUser = createPaint(Paint.Style.FILL, 20f, Color.CYAN)
-        paintRoute = createPaint(Paint.Style.FILL, 10f, Color.GREEN)
+        paintWalls = createPaint(Paint.Style.STROKE, 3f, Color.GREEN)
+        paintPassages = createPaint(Paint.Style.STROKE, 5f, Color.DKGRAY)
+        paintAntennas = createPaint(Paint.Style.STROKE, 5f, Color.WHITE)
+        paintUser = createPaint(Paint.Style.FILL, 10f, Color.CYAN)
+        paintRoute = createPaint(Paint.Style.FILL, 10f, Color.MAGENTA)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -75,7 +75,7 @@ class DrawView : View {
             if (shouldDisplayUser) {
                 canvas.drawCircle(position.x.toFloat(),
                         position.y.toFloat(),
-                        20f,
+                        15f,
                         paintUser)
             }
         }

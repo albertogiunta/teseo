@@ -34,7 +34,7 @@ object Unmarshaler {
     fun unmarshalArea(unmarshaledArea: String): AreaViewedFromAUser {
         val jsonAdapter: JsonAdapter<AreaViewedFromAUser> = moshi.adapter(AreaViewedFromAUser::class.java)
         AreaState.area = jsonAdapter.fromJson(unmarshaledArea) as AreaViewedFromAUser
-        return jsonAdapter.fromJson(unmarshaledArea) as AreaViewedFromAUser
+        return AreaState.area!!
     }
 
     fun unmarshalRouteResponse(unmarshaledRouteResponseShort: String): RouteResponseShort {

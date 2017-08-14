@@ -6,12 +6,14 @@
         android:viewportHeight="217">
 
     <path
-            android:fillColor="#000000"
+            android:fillColor="#666"
             android:fillType="evenOdd"
             android:strokeWidth="1"
             android:pathData="M0,30.9907 C0,13.875,13.8828,0,31.0005,0 L88.9995,0
-C106.121,0,120,13.8801,120,30.9907 L120,157.575 L60,216.949 L0,157.575
-L0,30.9907 Z"/>
+C106.121,0,120,13.8801,120,30.9907 L120,140.581
+C120,149.966,114.596,162.922,107.912,169.536 L86.2951,190.928
+C71.7727,205.299,48.2265,205.298,33.7049,190.928 L12.0878,169.536
+C5.41187,162.93,0,149.961,0,140.581 L0,30.9907 Z"/>
     <path
             android:fillColor="#FFFFFF"
             android:fillType="evenOdd"

@@ -1,9 +1,10 @@
-package com.jaus.albertogiunta.teseo.util
+package com.jaus.albertogiunta.teseo.networking
 
 import com.jaus.albertogiunta.teseo.MainPresenter
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.CellInfo
-import com.jaus.albertogiunta.teseo.util.CHANNEL.*
+import com.jaus.albertogiunta.teseo.helpers.SavedCellUri
+import com.jaus.albertogiunta.teseo.util.EmulatorUtils
 import okhttp3.*
 import trikita.log.Log
 import java.util.concurrent.TimeUnit
@@ -160,6 +161,7 @@ class BaseWebSocket(address: String, val onMessageListener: (text: String?) -> U
     }
 
     override fun send(s: String) {
+
         webSocket.send(s)
     }
 

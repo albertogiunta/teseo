@@ -11,13 +11,13 @@
 
     <include
             android:id="@+id/layoutFirst"
-            layout="@layout/first_open_layout"
+            layout="@layout/layout_launch"
             android:visibility="gone"
             />
 
     <include
             android:id="@+id/layoutSecond"
-            layout="@layout/normal_navigation_layout"
+            layout="@layout/layout_normal_navigation"
             android:visibility="visible"
             />
 

@@ -3,9 +3,9 @@ package com.jaus.albertogiunta.teseo
 import com.jaus.albertogiunta.teseo.data.Coordinates
 import com.jaus.albertogiunta.teseo.data.Passage
 import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.util.Direction
-import com.jaus.albertogiunta.teseo.util.DistanceHelper
-import com.jaus.albertogiunta.teseo.util.MovementHelper
+import com.jaus.albertogiunta.teseo.helpers.Direction
+import com.jaus.albertogiunta.teseo.helpers.DistanceHelper
+import com.jaus.albertogiunta.teseo.helpers.MovementHelper
 import org.junit.Assert.*
 import org.junit.Test
 

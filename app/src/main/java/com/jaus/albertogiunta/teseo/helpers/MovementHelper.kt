@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.util
+package com.jaus.albertogiunta.teseo.helpers
 
 import com.jaus.albertogiunta.teseo.data.Coordinates
 import com.jaus.albertogiunta.teseo.data.Passage
@@ -41,9 +41,21 @@ object DistanceHelper {
     }
 
     fun doesPointLieOnLine(a: Point, b: Point, point: Point): Boolean {
-        return DistanceHelper.calculateDistanceBetweenPoints(a, point) +
-                DistanceHelper.calculateDistanceBetweenPoints(point, b) <
-                DistanceHelper.calculateDistanceBetweenPoints(a, b) + allowance
+        return calculateDistanceBetweenPoints(a, point) +
+                calculateDistanceBetweenPoints(point, b) <
+                calculateDistanceBetweenPoints(a, b) + allowance
+    }
+
+    fun calulateMidPassage(p: Passage): Point {
+        return calculateMidPoint(p.startCoordinates, p.endCoordinates)
+    }
+
+    fun calculateMidPoint(a: Point, b: Point): Point {
+        return Point(calculateMidNumber(a.x, b.x), calculateMidNumber(a.y, b.y))
+    }
+
+    fun calculateMidNumber(a: Int, b: Int): Int {
+        return Math.round((Math.abs(a + b) / 2).toDouble()).toInt()
     }
 }
 

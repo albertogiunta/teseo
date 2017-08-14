@@ -4,8 +4,8 @@ import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.util.Direction
-import com.jaus.albertogiunta.teseo.util.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.helpers.Direction
+import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH
 
 interface AreaUpdateListener {
 

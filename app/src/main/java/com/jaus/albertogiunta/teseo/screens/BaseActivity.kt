@@ -1,7 +1,8 @@
-package com.jaus.albertogiunta.teseo
+package com.jaus.albertogiunta.teseo.screens
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.jaus.albertogiunta.teseo.BuildConfig
 import trikita.log.Log
 
 open class BaseActivity : AppCompatActivity() {
