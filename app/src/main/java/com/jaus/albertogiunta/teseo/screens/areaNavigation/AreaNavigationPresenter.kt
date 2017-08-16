@@ -3,7 +3,6 @@ package com.jaus.albertogiunta.teseo.screens.areaNavigation
 import com.jaus.albertogiunta.teseo.*
 import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.helpers.*
-import com.jaus.albertogiunta.teseo.networking.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.networking.WebSocketHelper
 import com.jaus.albertogiunta.teseo.util.IDExtractor
 import com.jaus.albertogiunta.teseo.util.Unmarshaler
@@ -91,9 +90,9 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
         view.onAreaUpdated(area)
-        position = DistanceHelper.calulateMidPassage(area.rooms
+        position = DistanceHelper.calculateMidPassage(area.rooms
                 .filter { (info) -> info.isEntryPoint }.first()
-                .passages.filter { p -> p.neighborId == MovementHelper.NEUTRAL_PASSAGE }.first())
+                .passages.filter { (neighborId) -> neighborId == MovementHelper.NEUTRAL_PASSAGE }.first())
     }
 
     override fun onConnectMessageReceived(connectMessage: String?) {

@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.customViews
+package com.jaus.albertogiunta.teseo.drawing
 
 import android.content.Context
 import android.graphics.Canvas

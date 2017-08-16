@@ -46,7 +46,7 @@ object DistanceHelper {
                 calculateDistanceBetweenPoints(a, b) + allowance
     }
 
-    fun calulateMidPassage(p: Passage): Point {
+    fun calculateMidPassage(p: Passage): Point {
         return calculateMidPoint(p.startCoordinates, p.endCoordinates)
     }
 

@@ -90,3 +90,32 @@ interface CellSwitchingListener {
 }
 
 interface SignalAndCellSwitchingListener : SignalListener, CellSwitchingListener
+
+/**
+ * Callback functions that will handle the different kind of responses received from each kind of websocket
+ */
+interface WSMessageCallbacks {
+
+    /**
+     * Message received after a request for contact is fired.
+     *
+     * @param connectMessage can be different depending on the request message
+     *                          (i.e. simple "ack" or the entire "area")
+     */
+    fun onConnectMessageReceived(connectMessage: String?)
+
+    /**
+     * Received without it being requested (push notification kind of thing)
+     *
+     * @param alarmMessage is a list of RoomIDs
+     */
+    fun onAlarmMessageReceived(alarmMessage: String?)
+
+    /**
+     * Received after a route request is fired by the user
+     *
+     * @param routeMessage is a list of @see RoomID
+     */
+    fun onRouteMessageReceived(routeMessage: String?)
+
+}
