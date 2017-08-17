@@ -64,7 +64,13 @@ interface RouteListener {
     /**
      * Callback for when a cell is received
      */
-    fun onRouteFollowedUntilEnd()
+    fun invalidateRoute(isEmergency: Boolean)
+
+}
+
+interface SystemShutdownListener {
+
+    fun onShutdownReceived()
 
 }
 

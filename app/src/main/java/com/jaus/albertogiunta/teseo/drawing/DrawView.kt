@@ -31,7 +31,7 @@ class DrawView : View {
         paintPassages = createPaint(Paint.Style.STROKE, 5f, Color.DKGRAY)
         paintAntennas = createPaint(Paint.Style.STROKE, 5f, Color.WHITE)
         paintUser = createPaint(Paint.Style.FILL, 10f, Color.CYAN)
-        paintRoute = createPaint(Paint.Style.FILL, 10f, Color.MAGENTA)
+        paintRoute = createPaint(Paint.Style.FILL, 10f, Color.GREEN)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -68,7 +68,20 @@ class DrawView : View {
                                 stop.antennaPosition.x.toFloat(),
                                 stop.antennaPosition.y.toFloat(),
                                 paintRoute)
+
+                        if (index == route.size - 2) {
+                            val paintAim: Paint = createPaint(Paint.Style.FILL, 20f, Color.WHITE)
+                            val paintAim2: Paint = createPaint(Paint.Style.FILL, 20f, Color.BLUE)
+                            paintAim.color
+                            canvas.drawCircle(stop.antennaPosition.x.toFloat(),
+                                    stop.antennaPosition.y.toFloat(),
+                                    20f, paintAim)
+                            canvas.drawCircle(stop.antennaPosition.x.toFloat(),
+                                    stop.antennaPosition.y.toFloat(),
+                                    10f, paintAim2)
+                        }
                     }
+
                 }
             }
 

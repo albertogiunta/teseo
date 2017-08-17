@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -13,13 +14,15 @@ import com.jaus.albertogiunta.teseo.data.*
 import com.jaus.albertogiunta.teseo.helpers.Direction
 import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH
 import com.jaus.albertogiunta.teseo.screens.BaseActivity
+import com.jaus.albertogiunta.teseo.screens.initialSetup.InitialSetupActivity
+import kotlinx.android.synthetic.main.activity_area_navigation.*
 import kotlinx.android.synthetic.main.layout_launch.*
 import kotlinx.android.synthetic.main.layout_normal_navigation.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 
-interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener, SignalListener {
+interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener, SignalListener, SystemShutdownListener {
 
     /**
      * Get the view context
@@ -45,14 +48,12 @@ class MainActivity : View, BaseActivity() {
 
         btnFirstConnect.setOnClickListener {
             //            presenter.askConnection()
-//            layoutFirst.visibility = android.view.View.GONE
-//            layoutSecond.visibility = android.view.View.VISIBLE
-//            startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
+            startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
 
         btnLaterConnect.setOnClickListener {
-            presenter.askConnection()
-//            startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
+            //            presenter.askConnection()
+            startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
 
         btnRoute.setOnClickListener {
@@ -79,6 +80,8 @@ class MainActivity : View, BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+//            layoutFirst.visibility = android.view.View.GONE
+//            layoutSecond.visibility = android.view.View.VISIBLE
         presenter.askConnection()
     }
 
@@ -100,10 +103,15 @@ class MainActivity : View, BaseActivity() {
         }
     }
 
-    override fun onRouteFollowedUntilEnd() {
+    override fun invalidateRoute(isEmergency: Boolean) {
         runOnUiThread {
-            toast("You reached your destination!")
+            val message: String
+            when (isEmergency) {
+                false -> message = "You reached your destination"
+                true -> message = "The emergency's done"
+            }
             drawView.undrowRoute()
+            Snackbar.make(layoutSecond, message, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -114,6 +122,15 @@ class MainActivity : View, BaseActivity() {
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {
         runOnUiThread { tvCurrentRoom.text = cell.info.id.name }
+    }
+
+    override fun onShutdownReceived() {
+        runOnUiThread {
+            toast("The System appears to have shut down")
+            tvEmergencyMode.visibility = android.view.View.VISIBLE
+            tvEmergencyMode.text = "CAN'T CONNECT TO HOST"
+        }
+
     }
 
     private fun detectedMovement(direction: Direction) {

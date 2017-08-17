@@ -15,17 +15,20 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
         const val NORMAL_CONNECTION = "normalConnection"
         const val DISCONNECTION = "disconnect"
         const val NORMAL_CONNECTION_RESPONSE = "ack"
+        const val END_ALARM = "endAlarm"
+        const val SYS_SHUTDOWN = "sysShutdown"
     }
 
     var isSwitching: Boolean = false
 
     var signal: SignalHelper = SignalHelper(this)
 
-    var webSocketHelper = WebSocketHelper(this)
+    lateinit var webSocketHelper: WebSocketHelper
 
     var signalObservers: MutableList<SignalListener> = mutableListOf()
     var positionObservers: MutableList<UserPositionListener> = mutableListOf()
     var cellObservers: MutableList<CellUpdateListener> = mutableListOf()
+    var sysShutdownObservers: MutableList<SystemShutdownListener> = mutableListOf()
 
     var cell: RoomViewedFromAUser? = null
         set(value) {
@@ -59,6 +62,7 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 
     init {
         signalObservers.add(view)
+        sysShutdownObservers.add(view)
         cellObservers.add(view)
         cellObservers.add(signal)
         positionObservers.add(this)
@@ -80,10 +84,8 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onPositionChanged(userPosition: Point) {
-//        Log.d("onPositionChanged: " + route?.route?.last()?.serial + " " + cell?.info?.id?.serial)
         if (isSetupFinished() && route?.route?.last()?.serial == cell?.info?.id?.serial) {
-            Log.d("onPositionChanged: invalidating route")
-            view.onRouteFollowedUntilEnd()
+            view.invalidateRoute(false)
             route = null
         }
     }
@@ -113,8 +115,11 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onAlarmMessageReceived(alarmMessage: String?) {
-        Log.d("onAlarmMessageReceived: received ALARM")
-        alarmMessage?.let { emergencyRoute = Unmarshaler.unmarshalRouteResponse(it) }
+        when (alarmMessage) {
+            END_ALARM -> view.invalidateRoute(false)
+            SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
+            else -> emergencyRoute = alarmMessage?.let { Unmarshaler.unmarshalRouteResponse(it) }
+        }
     }
 
     override fun onRouteMessageReceived(routeMessage: String?) {
@@ -123,9 +128,6 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
     }
 
     override fun onSwitchToCellRequested(room: RoomViewedFromAUser) {
-        // use for test
-//        onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
-        // use in production
         isSwitching = true
         webSocketHelper.handleSwitch(room.cell)
     }
@@ -142,6 +144,10 @@ class MainPresenter(val view: View) : AreaUpdateListener, UserMovementListener, 
 //        if (area == null) onConnectMessageReceived(BufferedReader(InputStreamReader(view.context().resources.openRawResource(R.raw.area))).lines().collect(Collectors.joining("\n")))
 //        else onConnectMessageReceived(NORMAL_CONNECTION_RESPONSE)
         // use in production
+        if (AreaState.area == null) {
+            // todo sistema cane
+            webSocketHelper = WebSocketHelper(this)
+        }
         webSocketHelper.connectWS.send(if (AreaState.area == null) FIRST_CONNECTION else NORMAL_CONNECTION)
     }
 

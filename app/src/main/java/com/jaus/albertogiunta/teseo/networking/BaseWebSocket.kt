@@ -22,9 +22,9 @@ class WebSocketHelper(val messageCallbacks: WSMessageCallbacks) {
     lateinit var routeWS: CustomWebSocket
     private var isSwitchingAvailable = true
 
-    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://192.168.1.107"
-    private var cellUri: String = ":8081/uri1"
-//    private var cellUri: String = SavedCellUri.uri // use this when using camera qr code
+    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://192.168.0.111"
+    //    private var cellUri: String = ":8081/uri1"
+    private var cellUri: String = SavedCellUri.uri // use this when using camera qr code
         set(value) {
             field = value
             baseAddress = ip + cellUri
