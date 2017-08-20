@@ -1,11 +1,12 @@
 package com.jaus.albertogiunta.teseo
 
+import android.content.Context
 import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.helpers.Direction
-import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.utils.Direction
 
 interface AreaUpdateListener {
 
@@ -123,5 +124,37 @@ interface WSMessageCallbacks {
      * @param routeMessage is a list of @see RoomID
      */
     fun onRouteMessageReceived(routeMessage: String?)
+
+}
+
+interface AreaNavigationView : AreaUpdateListener,
+        UserPositionListener,
+        RouteListener,
+        CellUpdateListener,
+        SignalListener,
+        SystemShutdownListener {
+
+    /**
+     * Get the view context
+     */
+    fun context(): Context
+
+}
+
+interface AreaNavigationPresenter : AreaUpdateListener,
+        UserMovementListener,
+        UserPositionListener,
+        SignalAndCellSwitchingListener,
+        WSMessageCallbacks {
+
+    /**
+     * Tells the appropriate websocket to connect, either for the first time or when the connection is lost
+     */
+    fun askConnection()
+
+    /**
+     * Contacts the websocket and tells it to ask for the specified route
+     */
+    fun askRoute(departureRoomName: String, arrivalRoomName: String)
 
 }

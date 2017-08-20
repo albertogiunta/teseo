@@ -1,15 +1,15 @@
 package com.jaus.albertogiunta.teseo.screens.initialSetup
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.jaus.albertogiunta.teseo.R
-import com.jaus.albertogiunta.teseo.helpers.SavedCellUri
+import com.jaus.albertogiunta.teseo.screens.BaseActivity
+import com.jaus.albertogiunta.teseo.utils.SavedCellUri
 import github.nisrulz.qreader.QRDataListener
 import github.nisrulz.qreader.QREader
 import kotlinx.android.synthetic.main.activity_initial_setup.*
 import trikita.log.Log
 
-class InitialSetupActivity : AppCompatActivity() {
+class InitialSetupActivity : BaseActivity() {
 
     private var qReader: QREader? = null
 

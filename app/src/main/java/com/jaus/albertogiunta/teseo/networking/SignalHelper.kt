@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.helpers
+package com.jaus.albertogiunta.teseo.networking
 
 import android.graphics.Color
 import com.jaus.albertogiunta.teseo.CellUpdateListener
@@ -7,13 +7,14 @@ import com.jaus.albertogiunta.teseo.UserPositionListener
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH.*
-import com.jaus.albertogiunta.teseo.util.IDExtractor
+import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH.*
+import com.jaus.albertogiunta.teseo.utils.DistanceHelper
+import com.jaus.albertogiunta.teseo.utils.IDExtractor
 import trikita.log.Log
 
-class SignalHelper(val signalListener: SignalAndCellSwitchingListener) : UserPositionListener, CellUpdateListener {
+class SignalHelper(private val signalListener: SignalAndCellSwitchingListener) : UserPositionListener, CellUpdateListener {
 
-    lateinit var cell: RoomViewedFromAUser
+    private lateinit var cell: RoomViewedFromAUser
     lateinit var bestNewCandidate: RoomViewedFromAUser
 
     override fun onPositionChanged(userPosition: Point) {
@@ -39,18 +40,17 @@ class SignalHelper(val signalListener: SignalAndCellSwitchingListener) : UserPos
         this.bestNewCandidate = cell
     }
 
-    private fun calculateSignalStrength(userPosition: Point): SIGNAL_STRENGTH {
-        return when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 40)) {
-            true -> STRONG
-            false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 20)) {
-                true -> MEDIUM
-                false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 0)) {
-                    true -> LOW
-                    false -> VERY_LOW
+    private fun calculateSignalStrength(userPosition: Point): SIGNAL_STRENGTH =
+            when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 40)) {
+                true -> STRONG
+                false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 20)) {
+                    true -> MEDIUM
+                    false -> when (DistanceHelper.doesPointLieInsideRectangle(userPosition, cell.info.roomVertices, 0)) {
+                        true -> LOW
+                        false -> VERY_LOW
+                    }
                 }
             }
-        }
-    }
 
     private fun getNewBestCandidate(candidates: List<RoomViewedFromAUser>, userPosition: Point): RoomViewedFromAUser {
         return candidates

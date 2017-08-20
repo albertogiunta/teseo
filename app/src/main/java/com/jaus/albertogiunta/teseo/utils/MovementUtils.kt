@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.helpers
+package com.jaus.albertogiunta.teseo.utils
 
 import com.jaus.albertogiunta.teseo.data.Coordinates
 import com.jaus.albertogiunta.teseo.data.Passage
@@ -29,9 +29,8 @@ object DistanceHelper {
 
     private val allowance = 1
 
-    fun calculateDistanceBetweenPoints(a: Point, b: Point): Double {
-        return Math.sqrt((Math.pow((b.x - a.x).toDouble(), 2.0)) + Math.pow((b.y - a.y).toDouble(), 2.0))
-    }
+    fun calculateDistanceBetweenPoints(a: Point, b: Point): Double =
+            Math.sqrt((Math.pow((b.x - a.x).toDouble(), 2.0)) + Math.pow((b.y - a.y).toDouble(), 2.0))
 
     fun doesPointLieInsideRectangle(point: Point, vertices: Coordinates, padding: Int): Boolean {
         return point.y >= vertices.northWest.y + padding && // if under top border
@@ -46,17 +45,14 @@ object DistanceHelper {
                 calculateDistanceBetweenPoints(a, b) + allowance
     }
 
-    fun calculateMidPassage(p: Passage): Point {
-        return calculateMidPoint(p.startCoordinates, p.endCoordinates)
-    }
+    fun calculateMidPassage(p: Passage): Point =
+            calculateMidPoint(p.startCoordinates, p.endCoordinates)
 
-    fun calculateMidPoint(a: Point, b: Point): Point {
-        return Point(calculateMidNumber(a.x, b.x), calculateMidNumber(a.y, b.y))
-    }
+    fun calculateMidPoint(a: Point, b: Point): Point =
+            Point(calculateMidNumber(a.x, b.x), calculateMidNumber(a.y, b.y))
 
-    fun calculateMidNumber(a: Int, b: Int): Int {
-        return Math.round((Math.abs(a + b) / 2).toDouble()).toInt()
-    }
+    fun calculateMidNumber(a: Int, b: Int): Int =
+            Math.round((Math.abs(a + b) / 2).toDouble()).toInt()
 }
 
 enum class Direction {

@@ -10,7 +10,7 @@ import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.Point
 import com.jaus.albertogiunta.teseo.data.RoomInfo
 
-class DrawView : View {
+class AreaView : View {
 
     private lateinit var position: Point
     private lateinit var route: List<RoomInfo>
@@ -81,7 +81,6 @@ class DrawView : View {
                                     10f, paintAim2)
                         }
                     }
-
                 }
             }
 
@@ -122,7 +121,7 @@ class DrawView : View {
     }
 
     private fun createPaint(style: Paint.Style, strokeWidth: Float, color: Int): Paint {
-        val p: Paint = Paint()
+        val p = Paint()
         p.style = style
         p.strokeWidth = strokeWidth
         p.color = color

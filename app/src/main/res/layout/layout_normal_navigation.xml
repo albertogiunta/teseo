@@ -29,7 +29,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             />
 
-    <com.jaus.albertogiunta.teseo.drawing.DrawView
+    <com.jaus.albertogiunta.teseo.drawing.AreaView
             android:id="@+id/drawView"
             app:shapeColor="#7f0000"
             android:layout_width="360dp"

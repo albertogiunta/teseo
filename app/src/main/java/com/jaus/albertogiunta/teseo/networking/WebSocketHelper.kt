@@ -3,10 +3,10 @@ package com.jaus.albertogiunta.teseo.networking
 import com.jaus.albertogiunta.teseo.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.CellInfo
-import com.jaus.albertogiunta.teseo.helpers.SavedCellUri
 import com.jaus.albertogiunta.teseo.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.screens.areaNavigation.MainPresenter
-import com.jaus.albertogiunta.teseo.util.EmulatorUtils
+import com.jaus.albertogiunta.teseo.utils.EmulatorUtils
+import com.jaus.albertogiunta.teseo.utils.SavedCellUri
 import okhttp3.*
 import trikita.log.Log
 import java.util.concurrent.TimeUnit
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
  *
  * @property messageCallbacks needed to handle the responses
  */
-class WebSocketHelper(val messageCallbacks: WSMessageCallbacks) {
+class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
 
     lateinit var connectWS: CustomWebSocket
     lateinit var alarmWS: CustomWebSocket
@@ -68,7 +68,7 @@ class WebSocketHelper(val messageCallbacks: WSMessageCallbacks) {
  *
  * @property baseAddress needed in order to create all the different websockets
  */
-class WebSocketFactory(val baseAddress: String) {
+class WebSocketFactory(private val baseAddress: String) {
     /**
      * Creates a different kind of websocket depending on the channel provided
      *
@@ -78,10 +78,10 @@ class WebSocketFactory(val baseAddress: String) {
      */
     fun websocketForChannel(channel: CHANNEL, messageCallbacks: WSMessageCallbacks): CustomWebSocket {
         val address = baseAddress + channel.endpoint
-        when (channel) {
-            CONNECTION -> return BaseWebSocket(address, messageCallbacks::onConnectMessageReceived)
-            ROUTE -> return BaseWebSocket(address, messageCallbacks::onRouteMessageReceived)
-            ALARM -> return BaseWebSocket(address, messageCallbacks::onAlarmMessageReceived)
+        return when (channel) {
+            CONNECTION -> BaseWebSocket(address, messageCallbacks::onConnectMessageReceived)
+            ROUTE -> BaseWebSocket(address, messageCallbacks::onRouteMessageReceived)
+            ALARM -> BaseWebSocket(address, messageCallbacks::onAlarmMessageReceived)
             POSITION_UPDATE -> throw UnsupportedOperationException()
         }
     }
@@ -109,7 +109,7 @@ interface CustomWebSocket {
 
 }
 
-class BaseWebSocket(address: String, val onMessageListener: (text: String?) -> Unit) : CustomWebSocket, WebSocketListener() {
+class BaseWebSocket(address: String, private val onMessageListener: (text: String?) -> Unit) : CustomWebSocket, WebSocketListener() {
 
     private var webSocket: WebSocket
 

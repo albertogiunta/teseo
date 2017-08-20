@@ -3,9 +3,9 @@ package com.jaus.albertogiunta.teseo
 import com.jaus.albertogiunta.teseo.data.Coordinates
 import com.jaus.albertogiunta.teseo.data.Passage
 import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.helpers.Direction
-import com.jaus.albertogiunta.teseo.helpers.DistanceHelper
-import com.jaus.albertogiunta.teseo.helpers.MovementHelper
+import com.jaus.albertogiunta.teseo.utils.Direction
+import com.jaus.albertogiunta.teseo.utils.DistanceHelper
+import com.jaus.albertogiunta.teseo.utils.MovementHelper
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -44,7 +44,7 @@ class PositionValidatorTest {
 
     @Test
     fun MovementValidator_IsMovementLegit() {
-        val coordinates: Coordinates = Coordinates(Point(100, 100), Point(250, 100), Point(100, 200), Point(250, 200))
+        val coordinates = Coordinates(Point(100, 100), Point(250, 100), Point(100, 200), Point(250, 200))
         val passages: List<Passage> = arrayListOf(Passage(MovementHelper.NEUTRAL_PASSAGE, Point(100, 130), Point(100, 200)), Passage(1, Point(100, 130), Point(100, 200)),
                 Passage(1, Point(200, 130), Point(200, 200)), Passage(1, Point(100, 130), Point(100, 200)))
         testMovementGeneral(Point(150, 150), coordinates, passages, true, true, true, true)

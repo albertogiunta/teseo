@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
-import com.jaus.albertogiunta.teseo.util.Unmarshaler
+import com.jaus.albertogiunta.teseo.utils.Unmarshaler
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,7 +22,5 @@ class InstrumentedTest {
         assertTrue(area.rooms.size == 15)
     }
 
-    fun getAppContext(): Context {
-        return InstrumentationRegistry.getTargetContext()
-    }
+    fun getAppContext(): Context = InstrumentationRegistry.getTargetContext()
 }

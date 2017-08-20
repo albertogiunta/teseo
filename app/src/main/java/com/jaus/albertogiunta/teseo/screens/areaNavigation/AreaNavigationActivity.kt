@@ -9,32 +9,24 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.jaus.albertogiunta.teseo.*
+import com.jaus.albertogiunta.teseo.AreaNavigationPresenter
+import com.jaus.albertogiunta.teseo.AreaNavigationView
+import com.jaus.albertogiunta.teseo.R
 import com.jaus.albertogiunta.teseo.data.*
-import com.jaus.albertogiunta.teseo.helpers.Direction
-import com.jaus.albertogiunta.teseo.helpers.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
 import com.jaus.albertogiunta.teseo.screens.BaseActivity
 import com.jaus.albertogiunta.teseo.screens.initialSetup.InitialSetupActivity
+import com.jaus.albertogiunta.teseo.utils.Direction
 import kotlinx.android.synthetic.main.activity_area_navigation.*
 import kotlinx.android.synthetic.main.layout_launch.*
 import kotlinx.android.synthetic.main.layout_normal_navigation.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
-
-interface View : AreaUpdateListener, UserPositionListener, RouteListener, CellUpdateListener, SignalListener, SystemShutdownListener {
-
-    /**
-     * Get the view context
-     */
-    fun context(): Context
-
-}
-
 @Suppress("EXPERIMENTAL_FEATURE_WARNING")
-class MainActivity : View, BaseActivity() {
+class MainActivity : AreaNavigationView, BaseActivity() {
 
-    private lateinit var presenter: MainPresenter
+    private lateinit var presenter: AreaNavigationPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +37,6 @@ class MainActivity : View, BaseActivity() {
         }
 
         presenter = MainPresenter(this)
-
         btnFirstConnect.setOnClickListener {
             //            presenter.askConnection()
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
@@ -74,14 +65,12 @@ class MainActivity : View, BaseActivity() {
         }
     }
 
-    override fun context(): Context {
-        return this@MainActivity
-    }
+    override fun context(): Context = this@MainActivity
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//            layoutFirst.visibility = android.view.View.GONE
-//            layoutSecond.visibility = android.view.View.VISIBLE
+//            layoutFirst.visibility = android.view.AreaNavigationView.GONE
+//            layoutSecond.visibility = android.view.AreaNavigationView.VISIBLE
         presenter.askConnection()
     }
 
@@ -145,8 +134,8 @@ class MainActivity : View, BaseActivity() {
 
         val rooms = AreaState.area?.rooms?.map { (info) -> info.id.name }?.sorted()
 
-        var departure: String = ""
-        var arrival: String = ""
+        var departure = ""
+        var arrival = ""
 
         alert {
             title = "Choose your route"

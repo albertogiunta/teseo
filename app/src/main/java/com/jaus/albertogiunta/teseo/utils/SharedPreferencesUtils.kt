@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.helpers
+package com.jaus.albertogiunta.teseo.utils
 
 import com.chibatching.kotpref.KotprefModel
 

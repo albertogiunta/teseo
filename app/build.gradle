@@ -6,14 +6,14 @@ apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '25.0.3'
     defaultConfig {
-        applicationId "com.jaus.albertogiunta.teseo"
+        applicationId 'com.jaus.albertogiunta.teseo'
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        versionName '1.0'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
 
     }
@@ -40,15 +40,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.4"
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
-    compile "com.chibatching.kotpref:kotpref:2.1.2"
-    compile "org.jetbrains.anko:anko:0.10.1"
+    compile 'com.chibatching.kotpref:kotpref:2.1.2'
+    compile 'org.jetbrains.anko:anko:0.10.1'
     compile 'co.trikita:log:1.1.5'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.squareup.moshi:moshi:1.5.0'
@@ -61,6 +61,6 @@ repositories {
 }
 kotlin {
     experimental {
-        coroutines "enable"
+        coroutines 'enable'
     }
 }

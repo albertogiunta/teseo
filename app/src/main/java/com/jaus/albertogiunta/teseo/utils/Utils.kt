@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.util
+package com.jaus.albertogiunta.teseo.utils
 
 import android.os.Build
 import com.jaus.albertogiunta.teseo.data.*
@@ -11,20 +11,16 @@ object EmulatorUtils {
     /**
      * Find out if your on emulator or you
      */
-    fun isOnEmulator(): Boolean {
-        return Build.HARDWARE.contains("golfdish")
-    }
+    fun isOnEmulator(): Boolean = Build.HARDWARE.contains("golfdish")
 
 }
 
 object IDExtractor {
-    fun roomsListFromIDs(ids: List<RoomID>, area: AreaViewedFromAUser): List<RoomViewedFromAUser> {
-        return ids.filter { (serial) -> serial > 0 }.map { (serial) -> serial }.map { id -> area.rooms.first { (info) -> info.id.serial == id } }
-    }
+    fun roomsListFromIDs(ids: List<RoomID>, area: AreaViewedFromAUser): List<RoomViewedFromAUser> =
+            ids.filter { (serial) -> serial > 0 }.map { (serial) -> serial }.map { id -> area.rooms.first { (info) -> info.id.serial == id } }
 
-    fun roomsInfoListFromIDs(ids: List<RoomID>, area: AreaViewedFromAUser): List<RoomInfo> {
-        return roomsListFromIDs(ids, area).map { (info) -> info }
-    }
+    fun roomsInfoListFromIDs(ids: List<RoomID>, area: AreaViewedFromAUser): List<RoomInfo> =
+            roomsListFromIDs(ids, area).map { (info) -> info }
 }
 
 object Unmarshaler {
