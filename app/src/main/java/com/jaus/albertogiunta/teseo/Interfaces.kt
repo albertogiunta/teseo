@@ -7,6 +7,7 @@ import com.jaus.albertogiunta.teseo.data.RoomInfo
 import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
 import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
 import com.jaus.albertogiunta.teseo.utils.Direction
+import okhttp3.WebSocketListener
 
 interface AreaUpdateListener {
 
@@ -158,3 +159,22 @@ interface AreaNavigationPresenter : AreaUpdateListener,
     fun askRoute(departureRoomName: String, arrivalRoomName: String)
 
 }
+
+/**
+ * Additional methods that handle the requests and responses to and from the server
+ */
+private interface TeseoWebSocket {
+
+    /**
+     * Sends a message using the websocket opened on a specific channel
+     *
+     * @param s the message to be sent
+     */
+    fun send(s: String)
+
+}
+
+/**
+ * A websocket with additional methods that handle the requests and responses to and from the server
+ */
+abstract class CustomWebSocket : TeseoWebSocket, WebSocketListener()

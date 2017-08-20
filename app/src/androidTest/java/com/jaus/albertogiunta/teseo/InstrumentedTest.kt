@@ -1,6 +1,8 @@
 package com.jaus.albertogiunta.teseo
 
 import android.content.Context
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
@@ -15,6 +17,7 @@ import java.util.stream.Collectors
 @RunWith(AndroidJUnit4::class)
 class InstrumentedTest {
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @Test
     fun Marshaling_CorrectAreaUnmarshaling() {
         val area: AreaViewedFromAUser = Unmarshaler.unmarshalArea(BufferedReader(InputStreamReader(getAppContext().resources.openRawResource(R.raw.area))).lines().collect(Collectors.joining("\n")))

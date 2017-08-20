@@ -38,12 +38,10 @@ class MainActivity : AreaNavigationView, BaseActivity() {
 
         presenter = MainPresenter(this)
         btnFirstConnect.setOnClickListener {
-            //            presenter.askConnection()
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
 
         btnLaterConnect.setOnClickListener {
-            //            presenter.askConnection()
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
 

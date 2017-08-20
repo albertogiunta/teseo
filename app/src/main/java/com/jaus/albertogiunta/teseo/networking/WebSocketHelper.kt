@@ -1,5 +1,6 @@
 package com.jaus.albertogiunta.teseo.networking
 
+import com.jaus.albertogiunta.teseo.CustomWebSocket
 import com.jaus.albertogiunta.teseo.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.data.AreaState
 import com.jaus.albertogiunta.teseo.data.CellInfo
@@ -7,7 +8,10 @@ import com.jaus.albertogiunta.teseo.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.screens.areaNavigation.MainPresenter
 import com.jaus.albertogiunta.teseo.utils.EmulatorUtils
 import com.jaus.albertogiunta.teseo.utils.SavedCellUri
-import okhttp3.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
 import trikita.log.Log
 import java.util.concurrent.TimeUnit
 /**
@@ -23,8 +27,7 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
     private var isSwitchingAvailable = true
 
     private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://192.168.0.111"
-    //    private var cellUri: String = ":8081/uri1"
-    private var cellUri: String = SavedCellUri.uri // use this when using camera qr code
+    private var cellUri: String = SavedCellUri.uri
         set(value) {
             field = value
             baseAddress = ip + cellUri
@@ -35,18 +38,6 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
 
     init {
         initWS()
-    }
-
-    private fun initWS() {
-        connectWS = WebSocketFactory(baseAddress).websocketForChannel(CONNECTION, messageCallbacks)
-        routeWS = WebSocketFactory(baseAddress).websocketForChannel(ROUTE, messageCallbacks)
-        alarmWS = WebSocketFactory(baseAddress).websocketForChannel(ALARM, messageCallbacks)
-        if (AreaState.area != null) connectWS.send(MainPresenter.NORMAL_CONNECTION)
-    }
-
-    private fun disconnectWS() {
-        connectWS.send(MainPresenter.DISCONNECTION)
-        alarmWS.send(MainPresenter.DISCONNECTION)
     }
 
     /**
@@ -61,22 +52,20 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
             initWS()
         }
     }
-}
 
-/**
- * Creates different websockets depending on the parameters passed to it
- *
- * @property baseAddress needed in order to create all the different websockets
- */
-class WebSocketFactory(private val baseAddress: String) {
-    /**
-     * Creates a different kind of websocket depending on the channel provided
-     *
-     * @param channel the channel that discriminates which ws will be created
-     * @param messageCallbacks the callback function that will handle the response to a request
-     * @return a custom ws that will handle requests and responses
-     */
-    fun websocketForChannel(channel: CHANNEL, messageCallbacks: WSMessageCallbacks): CustomWebSocket {
+    private fun initWS() {
+        connectWS = createWebsocketForChannel(CONNECTION)
+        routeWS = createWebsocketForChannel(ROUTE)
+        alarmWS = createWebsocketForChannel(ALARM)
+        if (AreaState.area != null) connectWS.send(MainPresenter.NORMAL_CONNECTION)
+    }
+
+    private fun disconnectWS() {
+        connectWS.send(MainPresenter.DISCONNECTION)
+        alarmWS.send(MainPresenter.DISCONNECTION)
+    }
+
+    private fun createWebsocketForChannel(channel: CHANNEL): CustomWebSocket {
         val address = baseAddress + channel.endpoint
         return when (channel) {
             CONNECTION -> BaseWebSocket(address, messageCallbacks::onConnectMessageReceived)
@@ -87,29 +76,7 @@ class WebSocketFactory(private val baseAddress: String) {
     }
 }
 
-/**
- * A websocket with additional methods that handle the requests and responses to and from the server
- */
-interface CustomWebSocket {
-
-    /**
-     * Sends a message using the websocket opened on a specific channel
-     *
-     * @param s the message to be sent
-     */
-    fun send(s: String)
-
-    /**
-     * Handles responses or more generic messages received from a websocket
-     *
-     * @param webSocket the websocket instance, useful to handle the sender and other kind of parameters
-     * @param text the text sent from the server
-     */
-    fun onMessage(webSocket: WebSocket, text: String)
-
-}
-
-class BaseWebSocket(address: String, private val onMessageListener: (text: String?) -> Unit) : CustomWebSocket, WebSocketListener() {
+class BaseWebSocket(address: String, private val onMessageListener: (text: String?) -> Unit) : CustomWebSocket() {
 
     private var webSocket: WebSocket
 
@@ -133,7 +100,6 @@ class BaseWebSocket(address: String, private val onMessageListener: (text: Strin
     }
 
     override fun send(s: String) {
-
         webSocket.send(s)
     }
 
