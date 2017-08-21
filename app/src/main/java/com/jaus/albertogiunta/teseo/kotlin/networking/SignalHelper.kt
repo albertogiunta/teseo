@@ -1,15 +1,14 @@
-package com.jaus.albertogiunta.teseo.networking
+package com.jaus.albertogiunta.teseo.kotlin.networking
 
 import android.graphics.Color
-import com.jaus.albertogiunta.teseo.CellUpdateListener
-import com.jaus.albertogiunta.teseo.SignalAndCellSwitchingListener
-import com.jaus.albertogiunta.teseo.UserPositionListener
-import com.jaus.albertogiunta.teseo.data.AreaState
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH.*
-import com.jaus.albertogiunta.teseo.utils.DistanceHelper
-import com.jaus.albertogiunta.teseo.utils.IDExtractor
+import com.jaus.albertogiunta.teseo.kotlin.CellUpdateListener
+import com.jaus.albertogiunta.teseo.kotlin.SignalAndCellSwitchingListener
+import com.jaus.albertogiunta.teseo.kotlin.UserPositionListener
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
+import com.jaus.albertogiunta.teseo.kotlin.data.Point
+import com.jaus.albertogiunta.teseo.kotlin.data.RoomViewedFromAUser
+import com.jaus.albertogiunta.teseo.kotlin.utils.DistanceHelper
+import com.jaus.albertogiunta.teseo.kotlin.utils.IDExtractor
 import trikita.log.Log
 
 class SignalHelper(private val signalListener: SignalAndCellSwitchingListener) : UserPositionListener, CellUpdateListener {

@@ -1,11 +1,11 @@
-package com.jaus.albertogiunta.teseo.screens.areaNavigation
+package com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation
 
-import com.jaus.albertogiunta.teseo.*
-import com.jaus.albertogiunta.teseo.data.*
-import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
-import com.jaus.albertogiunta.teseo.networking.SignalHelper
-import com.jaus.albertogiunta.teseo.networking.WebSocketHelper
-import com.jaus.albertogiunta.teseo.utils.*
+import com.jaus.albertogiunta.teseo.kotlin.*
+import com.jaus.albertogiunta.teseo.kotlin.data.*
+import com.jaus.albertogiunta.teseo.kotlin.networking.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.kotlin.networking.SignalHelper
+import com.jaus.albertogiunta.teseo.kotlin.networking.WebSocketHelper
+import com.jaus.albertogiunta.teseo.kotlin.utils.*
 import trikita.log.Log
 
 class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresenter {

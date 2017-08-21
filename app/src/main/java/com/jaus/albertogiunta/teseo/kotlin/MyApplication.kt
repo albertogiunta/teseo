@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo
+package com.jaus.albertogiunta.teseo.kotlin
 
 import android.app.Application
 import com.chibatching.kotpref.Kotpref

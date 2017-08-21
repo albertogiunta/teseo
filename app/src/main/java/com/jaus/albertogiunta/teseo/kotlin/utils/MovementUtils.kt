@@ -1,8 +1,8 @@
-package com.jaus.albertogiunta.teseo.utils
+package com.jaus.albertogiunta.teseo.kotlin.utils
 
-import com.jaus.albertogiunta.teseo.data.Coordinates
-import com.jaus.albertogiunta.teseo.data.Passage
-import com.jaus.albertogiunta.teseo.data.Point
+import com.jaus.albertogiunta.teseo.kotlin.data.Coordinates
+import com.jaus.albertogiunta.teseo.kotlin.data.Passage
+import com.jaus.albertogiunta.teseo.kotlin.data.Point
 
 object MovementHelper {
 

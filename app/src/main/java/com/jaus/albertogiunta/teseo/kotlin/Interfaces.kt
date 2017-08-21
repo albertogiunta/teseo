@@ -1,12 +1,12 @@
-package com.jaus.albertogiunta.teseo
+package com.jaus.albertogiunta.teseo.kotlin
 
 import android.content.Context
-import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.data.RoomInfo
-import com.jaus.albertogiunta.teseo.data.RoomViewedFromAUser
-import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
-import com.jaus.albertogiunta.teseo.utils.Direction
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaViewedFromAUser
+import com.jaus.albertogiunta.teseo.kotlin.data.Point
+import com.jaus.albertogiunta.teseo.kotlin.data.RoomInfo
+import com.jaus.albertogiunta.teseo.kotlin.data.RoomViewedFromAUser
+import com.jaus.albertogiunta.teseo.kotlin.networking.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.kotlin.utils.Direction
 import okhttp3.WebSocketListener
 
 interface AreaUpdateListener {

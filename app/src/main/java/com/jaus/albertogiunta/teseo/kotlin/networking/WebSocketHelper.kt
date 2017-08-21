@@ -1,20 +1,20 @@
-package com.jaus.albertogiunta.teseo.networking
+package com.jaus.albertogiunta.teseo.kotlin.networking
 
 import com.jaus.albertogiunta.teseo.BuildConfig
-import com.jaus.albertogiunta.teseo.CustomWebSocket
-import com.jaus.albertogiunta.teseo.WSMessageCallbacks
-import com.jaus.albertogiunta.teseo.data.AreaState
-import com.jaus.albertogiunta.teseo.data.CellInfo
-import com.jaus.albertogiunta.teseo.networking.CHANNEL.*
-import com.jaus.albertogiunta.teseo.screens.areaNavigation.MainPresenter
-import com.jaus.albertogiunta.teseo.utils.EmulatorUtils
-import com.jaus.albertogiunta.teseo.utils.SavedCellUri
+import com.jaus.albertogiunta.teseo.kotlin.CustomWebSocket
+import com.jaus.albertogiunta.teseo.kotlin.WSMessageCallbacks
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
+import com.jaus.albertogiunta.teseo.kotlin.data.CellInfo
+import com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation.MainPresenter
+import com.jaus.albertogiunta.teseo.kotlin.utils.EmulatorUtils
+import com.jaus.albertogiunta.teseo.kotlin.utils.SavedCellUri
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import trikita.log.Log
 import java.util.concurrent.TimeUnit
+
 /**
  * Will handle all the needed websockets and will holds the request and response methods for them
  *

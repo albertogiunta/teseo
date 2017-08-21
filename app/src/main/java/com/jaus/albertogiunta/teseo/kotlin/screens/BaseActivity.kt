@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.screens
+package com.jaus.albertogiunta.teseo.kotlin.screens
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

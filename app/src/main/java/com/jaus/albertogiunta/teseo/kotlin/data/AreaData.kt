@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.data
+package com.jaus.albertogiunta.teseo.kotlin.data
 
 object AreaState {
 

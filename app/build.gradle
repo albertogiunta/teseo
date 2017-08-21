@@ -36,13 +36,15 @@ android {
     }
 }
 
+sourceSets { main.java.srcDirs += 'src/main/kotlin' }
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.4"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     sourceCompatibility = 1.7
     targetCompatibility = 1.7

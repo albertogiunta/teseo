@@ -1,7 +1,7 @@
-package com.jaus.albertogiunta.teseo.utils
+package com.jaus.albertogiunta.teseo.kotlin.utils
 
 import android.os.Build
-import com.jaus.albertogiunta.teseo.data.*
+import com.jaus.albertogiunta.teseo.kotlin.data.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 

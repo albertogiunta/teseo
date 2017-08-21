@@ -1,9 +1,9 @@
-package com.jaus.albertogiunta.teseo.screens.initialSetup
+package com.jaus.albertogiunta.teseo.kotlin.screens.initialSetup
 
 import android.os.Bundle
 import com.jaus.albertogiunta.teseo.R
-import com.jaus.albertogiunta.teseo.screens.BaseActivity
-import com.jaus.albertogiunta.teseo.utils.SavedCellUri
+import com.jaus.albertogiunta.teseo.kotlin.screens.BaseActivity
+import com.jaus.albertogiunta.teseo.kotlin.utils.SavedCellUri
 import github.nisrulz.qreader.QRDataListener
 import github.nisrulz.qreader.QREader
 import kotlinx.android.synthetic.main.activity_initial_setup.*

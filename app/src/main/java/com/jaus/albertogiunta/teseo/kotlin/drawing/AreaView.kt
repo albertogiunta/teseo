@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.drawing
+package com.jaus.albertogiunta.teseo.kotlin.drawing
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,9 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.jaus.albertogiunta.teseo.data.AreaState
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.data.RoomInfo
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
+import com.jaus.albertogiunta.teseo.kotlin.data.Point
+import com.jaus.albertogiunta.teseo.kotlin.data.RoomInfo
 
 class AreaView : View {
 

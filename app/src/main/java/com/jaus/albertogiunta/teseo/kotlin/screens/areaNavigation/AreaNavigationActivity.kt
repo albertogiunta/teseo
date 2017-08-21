@@ -1,4 +1,4 @@
-package com.jaus.albertogiunta.teseo.screens.areaNavigation
+package com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation
 
 import android.Manifest
 import android.content.Context
@@ -9,14 +9,14 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.jaus.albertogiunta.teseo.AreaNavigationPresenter
-import com.jaus.albertogiunta.teseo.AreaNavigationView
 import com.jaus.albertogiunta.teseo.R
-import com.jaus.albertogiunta.teseo.data.*
-import com.jaus.albertogiunta.teseo.networking.SIGNAL_STRENGTH
-import com.jaus.albertogiunta.teseo.screens.BaseActivity
-import com.jaus.albertogiunta.teseo.screens.initialSetup.InitialSetupActivity
-import com.jaus.albertogiunta.teseo.utils.Direction
+import com.jaus.albertogiunta.teseo.kotlin.AreaNavigationPresenter
+import com.jaus.albertogiunta.teseo.kotlin.AreaNavigationView
+import com.jaus.albertogiunta.teseo.kotlin.data.*
+import com.jaus.albertogiunta.teseo.kotlin.networking.SIGNAL_STRENGTH
+import com.jaus.albertogiunta.teseo.kotlin.screens.BaseActivity
+import com.jaus.albertogiunta.teseo.kotlin.screens.initialSetup.InitialSetupActivity
+import com.jaus.albertogiunta.teseo.kotlin.utils.Direction
 import kotlinx.android.synthetic.main.activity_area_navigation.*
 import kotlinx.android.synthetic.main.layout_launch.*
 import kotlinx.android.synthetic.main.layout_normal_navigation.*
