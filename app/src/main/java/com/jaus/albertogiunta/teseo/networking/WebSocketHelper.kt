@@ -1,5 +1,6 @@
 package com.jaus.albertogiunta.teseo.networking
 
+import com.jaus.albertogiunta.teseo.BuildConfig
 import com.jaus.albertogiunta.teseo.CustomWebSocket
 import com.jaus.albertogiunta.teseo.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.data.AreaState
@@ -26,7 +27,7 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
     lateinit var routeWS: CustomWebSocket
     private var isSwitchingAvailable = true
 
-    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://192.168.0.111"
+    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + BuildConfig.IP_ADDRESS
     private var cellUri: String = SavedCellUri.uri
         set(value) {
             field = value
