@@ -7,6 +7,7 @@ import com.jaus.albertogiunta.teseo.kotlin.UserPositionListener
 import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
 import com.jaus.albertogiunta.teseo.kotlin.data.Point
 import com.jaus.albertogiunta.teseo.kotlin.data.RoomViewedFromAUser
+import com.jaus.albertogiunta.teseo.kotlin.networking.SIGNAL_STRENGTH.*
 import com.jaus.albertogiunta.teseo.kotlin.utils.DistanceHelper
 import com.jaus.albertogiunta.teseo.kotlin.utils.IDExtractor
 import trikita.log.Log

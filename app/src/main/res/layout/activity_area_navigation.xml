@@ -10,13 +10,13 @@
     <include
             android:id="@+id/layoutFirst"
             layout="@layout/layout_launch"
-            android:visibility="gone"
+            android:visibility="visible"
             />
 
     <include
             android:id="@+id/layoutSecond"
             layout="@layout/layout_normal_navigation"
-            android:visibility="visible"
+            android:visibility="gone"
             />
 
 </android.support.constraint.ConstraintLayout>

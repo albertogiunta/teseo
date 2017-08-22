@@ -137,7 +137,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
 
     override fun askConnection() {
-        webSocketHelper.connectWS.send(if (isSetupFinished()) FIRST_CONNECTION else NORMAL_CONNECTION)
+        webSocketHelper.connectWS.send(if (isSetupFinished()) NORMAL_CONNECTION else FIRST_CONNECTION)
     }
 
 

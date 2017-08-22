@@ -17,9 +17,6 @@ android {
         multiDexEnabled true
     }
     buildTypes {
-        debug {
-            buildConfigField "String", "IP_ADDRESS", "\"192.168.0.111\""
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

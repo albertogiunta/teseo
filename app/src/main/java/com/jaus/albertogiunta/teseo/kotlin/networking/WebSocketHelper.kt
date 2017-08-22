@@ -1,13 +1,13 @@
 package com.jaus.albertogiunta.teseo.kotlin.networking
 
-import com.jaus.albertogiunta.teseo.BuildConfig
 import com.jaus.albertogiunta.teseo.kotlin.CustomWebSocket
 import com.jaus.albertogiunta.teseo.kotlin.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
 import com.jaus.albertogiunta.teseo.kotlin.data.CellInfo
+import com.jaus.albertogiunta.teseo.kotlin.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation.MainPresenter
 import com.jaus.albertogiunta.teseo.kotlin.utils.EmulatorUtils
-import com.jaus.albertogiunta.teseo.kotlin.utils.SavedCellUri
+import com.jaus.albertogiunta.teseo.kotlin.utils.UriPrefs
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -27,12 +27,12 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
     lateinit var routeWS: CustomWebSocket
     private var isSwitchingAvailable = true
 
-    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + BuildConfig.IP_ADDRESS
-    private var cellUri: String = SavedCellUri.uri
+    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + UriPrefs.localIP
+    private var cellUri: String = UriPrefs.uri
         set(value) {
             field = value
             baseAddress = ip + cellUri
-            SavedCellUri.uri = value
+            UriPrefs.uri = value
             Log.d("Now connecting to $baseAddress")
         }
     private var baseAddress: String = ip + cellUri

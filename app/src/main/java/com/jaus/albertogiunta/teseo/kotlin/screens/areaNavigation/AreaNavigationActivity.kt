@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.jaus.albertogiunta.teseo.R
@@ -17,6 +18,7 @@ import com.jaus.albertogiunta.teseo.kotlin.networking.SIGNAL_STRENGTH
 import com.jaus.albertogiunta.teseo.kotlin.screens.BaseActivity
 import com.jaus.albertogiunta.teseo.kotlin.screens.initialSetup.InitialSetupActivity
 import com.jaus.albertogiunta.teseo.kotlin.utils.Direction
+import com.jaus.albertogiunta.teseo.kotlin.utils.UriPrefs
 import kotlinx.android.synthetic.main.activity_area_navigation.*
 import kotlinx.android.synthetic.main.layout_launch.*
 import kotlinx.android.synthetic.main.layout_normal_navigation.*
@@ -39,6 +41,14 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         presenter = MainPresenter(this)
         btnFirstConnect.setOnClickListener {
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
+        }
+
+        etIPAddress.setText(UriPrefs.localIP,  TextView.BufferType.EDITABLE)
+        btnSaveIPAddress.setOnClickListener {
+            UriPrefs.localIP = etIPAddress.text.toString()
+            runOnUiThread {
+                Snackbar.make(etIPAddress, "Your local IP has been saved", Snackbar.LENGTH_LONG).show()
+            }
         }
 
         btnLaterConnect.setOnClickListener {
@@ -67,8 +77,8 @@ class MainActivity : AreaNavigationView, BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-//            layoutFirst.visibility = android.view.AreaNavigationView.GONE
-//            layoutSecond.visibility = android.view.AreaNavigationView.VISIBLE
+            layoutFirst.visibility = View.GONE
+            layoutSecond.visibility = View.VISIBLE
         presenter.askConnection()
     }
 

@@ -3,7 +3,7 @@ package com.jaus.albertogiunta.teseo.kotlin.screens.initialSetup
 import android.os.Bundle
 import com.jaus.albertogiunta.teseo.R
 import com.jaus.albertogiunta.teseo.kotlin.screens.BaseActivity
-import com.jaus.albertogiunta.teseo.kotlin.utils.SavedCellUri
+import com.jaus.albertogiunta.teseo.kotlin.utils.UriPrefs
 import github.nisrulz.qreader.QRDataListener
 import github.nisrulz.qreader.QREader
 import kotlinx.android.synthetic.main.activity_initial_setup.*
@@ -18,7 +18,7 @@ class InitialSetupActivity : BaseActivity() {
         setContentView(R.layout.activity_initial_setup)
         qReader = QREader.Builder(this, cameraView, QRDataListener { data ->
             Log.d("Value read from QRCode: " + data)
-            SavedCellUri.uri = data
+            UriPrefs.uri = data
             finish()
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
