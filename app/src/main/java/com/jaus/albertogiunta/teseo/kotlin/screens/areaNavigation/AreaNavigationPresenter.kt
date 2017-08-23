@@ -116,7 +116,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
     override fun onAlarmMessageReceived(alarmMessage: String?) {
         when (alarmMessage) {
-            END_ALARM -> view.invalidateRoute(false)
+            END_ALARM -> view.invalidateRoute(true)
             SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
             else -> emergencyRoute = alarmMessage?.let { Unmarshaler.unmarshalRouteResponse(it) }
         }

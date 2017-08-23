@@ -10,7 +10,8 @@ data class RoomID(val serial: Int,
                   val name: String)
 
 data class CellInfo(val uri: String,
-                    val port: Int)
+                    val port: Int,
+                    val ip: String)
 
 data class RoomInfo(val id: RoomID,
                     val roomVertices: Coordinates,

@@ -43,12 +43,10 @@ class MainActivity : AreaNavigationView, BaseActivity() {
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
 
-        etIPAddress.setText(UriPrefs.localIP,  TextView.BufferType.EDITABLE)
+        etIPAddress.setText(UriPrefs.firstAddressByQRCode, TextView.BufferType.EDITABLE)
         btnSaveIPAddress.setOnClickListener {
-            UriPrefs.localIP = etIPAddress.text.toString()
-            runOnUiThread {
-                Snackbar.make(etIPAddress, "Your local IP has been saved", Snackbar.LENGTH_LONG).show()
-            }
+            UriPrefs.firstAddressByQRCode = etIPAddress.text.toString()
+            onActivityResult(0, 0, null)
         }
 
         btnLaterConnect.setOnClickListener {
@@ -76,9 +74,8 @@ class MainActivity : AreaNavigationView, BaseActivity() {
     override fun context(): Context = this@MainActivity
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-            layoutFirst.visibility = View.GONE
-            layoutSecond.visibility = View.VISIBLE
+        layoutFirst.visibility = View.GONE
+        layoutSecond.visibility = View.VISIBLE
         presenter.askConnection()
     }
 
@@ -102,12 +99,12 @@ class MainActivity : AreaNavigationView, BaseActivity() {
 
     override fun invalidateRoute(isEmergency: Boolean) {
         runOnUiThread {
-            val message: String
-            when (isEmergency) {
-                false -> message = "You reached your destination"
-                true -> message = "The emergency's done"
+            val message: String = when (isEmergency) {
+                false -> "You reached your destination"
+                true -> "The emergency's done"
             }
             drawView.undrowRoute()
+            tvEmergencyMode.visibility = View.GONE
             Snackbar.make(layoutSecond, message, Snackbar.LENGTH_LONG).show()
         }
     }

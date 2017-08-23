@@ -6,7 +6,6 @@ import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
 import com.jaus.albertogiunta.teseo.kotlin.data.CellInfo
 import com.jaus.albertogiunta.teseo.kotlin.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation.MainPresenter
-import com.jaus.albertogiunta.teseo.kotlin.utils.EmulatorUtils
 import com.jaus.albertogiunta.teseo.kotlin.utils.UriPrefs
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -27,15 +26,20 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
     lateinit var routeWS: CustomWebSocket
     private var isSwitchingAvailable = true
 
-    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + UriPrefs.localIP
-    private var cellUri: String = UriPrefs.uri
+    //    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + UriPrefs.firstAddressByQRCode
+//    private var ip: String = "ws://"
+//    private var cellUri: String = UriPrefs.uri
+//        set(value) {
+//            field = value
+//            baseAddress = ip + cellUri
+//            UriPrefs.uri = value
+//            Log.d("Now connecting to $baseAddress")
+//        }
+    private var baseAddress: String = "ws://${UriPrefs.firstAddressByQRCode}"
         set(value) {
-            field = value
-            baseAddress = ip + cellUri
-            UriPrefs.uri = value
-            Log.d("Now connecting to $baseAddress")
+            field = "ws://$value"
+            Log.d("Now connecting to $value")
         }
-    private var baseAddress: String = ip + cellUri
 
     init {
         initWS()
@@ -49,7 +53,7 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
     fun handleSwitch(cell: CellInfo) {
         if (isSwitchingAvailable) {
             disconnectWS()
-            cellUri = ":${cell.port}/${cell.uri}"
+            baseAddress = "${cell.ip}:${cell.port}/${cell.uri}"
             initWS()
         }
     }

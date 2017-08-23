@@ -5,8 +5,8 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.jaus.albertogiunta.teseo.data.AreaViewedFromAUser
-import com.jaus.albertogiunta.teseo.utils.Unmarshaler
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaViewedFromAUser
+import com.jaus.albertogiunta.teseo.kotlin.utils.Unmarshaler
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -13,7 +13,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. INSERT YOUR LOCAL IP ADDRESS↴"
+            android:text="INSERT 1ST CELL URI↴"
             android:textColor="#666"
             android:textStyle="bold"
             android:fontFamily="monospace"
@@ -35,7 +35,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2. TAP TO CONNECT↴"
+            android:text="OR TAP AND SCAN TO CONNECT↴"
             android:textColor="#666"
             android:textStyle="bold"
             android:fontFamily="monospace"
@@ -46,7 +46,9 @@
             android:textSize="15dp"
 
             android:id="@+id/textView"
-            tools:layout_editor_absoluteY="246dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnSaveIPAddress"
+            app:layout_constraintHorizontal_bias="0.508"
             />
     <ImageButton
             android:layout_width="wrap_content"
@@ -75,7 +77,7 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:hint="Insert your local IP address"
+            android:hint="Insert IP:PORT/URI"
             android:fontFamily="monospace"
             android:textColor="#fff"
             android:textColorHint="#999"
@@ -86,7 +88,7 @@
             app:layout_constraintVertical_bias="0.100000024"
             />
     <Button
-            android:text="Save IP ADDRESS"
+            android:text="GO TO MAP↪"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnSaveIPAddress"

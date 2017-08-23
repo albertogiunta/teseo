@@ -1,11 +1,11 @@
 package com.jaus.albertogiunta.teseo
 
-import com.jaus.albertogiunta.teseo.data.Coordinates
-import com.jaus.albertogiunta.teseo.data.Passage
-import com.jaus.albertogiunta.teseo.data.Point
-import com.jaus.albertogiunta.teseo.utils.Direction
-import com.jaus.albertogiunta.teseo.utils.DistanceHelper
-import com.jaus.albertogiunta.teseo.utils.MovementHelper
+import com.jaus.albertogiunta.teseo.kotlin.data.Coordinates
+import com.jaus.albertogiunta.teseo.kotlin.data.Passage
+import com.jaus.albertogiunta.teseo.kotlin.data.Point
+import com.jaus.albertogiunta.teseo.kotlin.utils.Direction
+import com.jaus.albertogiunta.teseo.kotlin.utils.DistanceHelper
+import com.jaus.albertogiunta.teseo.kotlin.utils.MovementHelper
 import org.junit.Assert.*
 import org.junit.Test
 

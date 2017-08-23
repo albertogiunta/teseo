@@ -17,8 +17,8 @@ class InitialSetupActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_initial_setup)
         qReader = QREader.Builder(this, cameraView, QRDataListener { data ->
-            Log.d("Value read from QRCode: " + data)
-            UriPrefs.uri = data
+            Log.d("Value read from QRCode: $data, should be somethinglike 192.168.0.1:8081/uri1")
+            UriPrefs.firstAddressByQRCode = data
             finish()
         }).facing(QREader.BACK_CAM)
                 .enableAutofocus(true)
