@@ -74,6 +74,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
     override fun context(): Context = this@MainActivity
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        inputMethodManager.hideSoftInputFromWindow(layoutSecond.windowToken, 0)
         layoutFirst.visibility = View.GONE
         layoutSecond.visibility = View.VISIBLE
         presenter.askConnection()
@@ -110,8 +111,10 @@ class MainActivity : AreaNavigationView, BaseActivity() {
     }
 
     override fun onSignalStrengthUpdated(strength: SIGNAL_STRENGTH) {
-        tvSignalStrength.text = strength.text
-        tvSignalStrength.textColor = strength.tint
+        runOnUiThread {
+            tvSignalStrength.text = strength.text
+            tvSignalStrength.textColor = strength.tint
+        }
     }
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {

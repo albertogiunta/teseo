@@ -94,8 +94,10 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
         view.onAreaUpdated(area)
-        position = DistanceHelper.calculateMidPassage(area.rooms.first { (info) -> info.isEntryPoint }
-                .passages.first { (neighborId) -> neighborId == MovementHelper.NEUTRAL_PASSAGE })
+        cell = AreaState.area?.rooms?.first({ (info) -> info.id.serial == UriPrefs.firstAddressByQRCode.split("uri").last().toInt() })
+        position = if (cell!!.info.isEntryPoint) DistanceHelper.calculateMidPassage(cell!!.passages.first { (neighborId) -> neighborId == MovementHelper.NEUTRAL_PASSAGE }) else cell!!.info.antennaPosition
+        Log.d("onConnectMessageReceived: cellId " + cell?.info?.id)
+
     }
 
     override fun onConnectMessageReceived(connectMessage: String?) {
@@ -106,8 +108,6 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
                 Log.d("onConnectMessageReceived: cellId" + cell?.info?.id)
             } else if (connectMessage != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
                 onAreaUpdated(Unmarshaler.unmarshalArea(it))
-                cell = AreaState.area?.rooms?.first({ (info) -> info.isEntryPoint })
-                Log.d("onConnectMessageReceived: cellId " + cell?.info?.id)
             } else {
                 Log.d("onConnectMessageReceived: $connectMessage")
             }
