@@ -50,7 +50,8 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
 
         btnLaterConnect.setOnClickListener {
-            startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
+            presenter.startReset()
+            toggleViews(false)
         }
 
         btnRoute.setOnClickListener {
@@ -75,8 +76,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         inputMethodManager.hideSoftInputFromWindow(layoutSecond.windowToken, 0)
-        layoutFirst.visibility = View.GONE
-        layoutSecond.visibility = View.VISIBLE
+        toggleViews(true)
         presenter.askConnection()
     }
 
@@ -94,7 +94,10 @@ class MainActivity : AreaNavigationView, BaseActivity() {
     override fun onRouteReceived(route: List<RoomInfo>, isEmergency: Boolean) {
         runOnUiThread {
             drawView.drawRoute(route, isEmergency)
-            if (isEmergency) tvEmergencyMode.visibility = android.view.View.VISIBLE
+            if (isEmergency) {
+                tvEmergencyMode.visibility = android.view.View.VISIBLE
+                tvEmergencyMode.text = "EMERGENCY MODE - GO TO ${route.last().id.name.capitalize()}"
+            }
         }
     }
 
@@ -127,7 +130,19 @@ class MainActivity : AreaNavigationView, BaseActivity() {
             tvEmergencyMode.visibility = android.view.View.VISIBLE
             tvEmergencyMode.text = "CAN'T CONNECT TO HOST"
         }
+    }
 
+    private fun toggleViews(areaOn: Boolean) {
+        when (areaOn) {
+            true -> {
+                layoutFirst.visibility = View.GONE
+                layoutSecond.visibility = View.VISIBLE
+            }
+            false -> {
+                layoutFirst.visibility = View.VISIBLE
+                layoutSecond.visibility = View.GONE
+            }
+        }
     }
 
     private fun detectedMovement(direction: Direction) {

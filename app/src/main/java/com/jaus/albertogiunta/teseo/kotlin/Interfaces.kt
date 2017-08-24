@@ -158,6 +158,11 @@ interface AreaNavigationPresenter : AreaUpdateListener,
      */
     fun askRoute(departureRoomName: String, arrivalRoomName: String)
 
+    /**
+     * Resets the cell value to go through the initial process again
+     */
+    fun startReset()
+
 }
 
 /**
@@ -171,6 +176,11 @@ private interface TeseoWebSocket {
      * @param s the message to be sent
      */
     fun send(s: String)
+
+    /**
+     * Closes a specific websocket
+     */
+    fun close()
 
 }
 

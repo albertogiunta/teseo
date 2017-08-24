@@ -48,10 +48,10 @@ object DistanceHelper {
     fun calculateMidPassage(p: Passage): Point =
             calculateMidPoint(p.startCoordinates, p.endCoordinates)
 
-    fun calculateMidPoint(a: Point, b: Point): Point =
+    private fun calculateMidPoint(a: Point, b: Point): Point =
             Point(calculateMidNumber(a.x, b.x), calculateMidNumber(a.y, b.y))
 
-    fun calculateMidNumber(a: Int, b: Int): Int =
+    private fun calculateMidNumber(a: Int, b: Int): Int =
             Math.round((Math.abs(a + b) / 2).toDouble()).toInt()
 }
 

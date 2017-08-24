@@ -1,8 +1,10 @@
 package com.jaus.albertogiunta.teseo.kotlin.networking
 
+import com.jaus.albertogiunta.teseo.kotlin.AreaUpdateListener
 import com.jaus.albertogiunta.teseo.kotlin.CustomWebSocket
 import com.jaus.albertogiunta.teseo.kotlin.WSMessageCallbacks
 import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
+import com.jaus.albertogiunta.teseo.kotlin.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.kotlin.data.CellInfo
 import com.jaus.albertogiunta.teseo.kotlin.networking.CHANNEL.*
 import com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation.MainPresenter
@@ -19,22 +21,13 @@ import java.util.concurrent.TimeUnit
  *
  * @property messageCallbacks needed to handle the responses
  */
-class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
+class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) : AreaUpdateListener {
 
-    lateinit var connectWS: CustomWebSocket
-    lateinit var alarmWS: CustomWebSocket
-    lateinit var routeWS: CustomWebSocket
     private var isSwitchingAvailable = true
+    lateinit var connectWS: CustomWebSocket
+    lateinit var routeWS: CustomWebSocket
+    private lateinit var alarmWS: CustomWebSocket
 
-    //    private var ip: String = if (EmulatorUtils.isOnEmulator()) "ws://10.0.2.2" else "ws://" + UriPrefs.firstAddressByQRCode
-//    private var ip: String = "ws://"
-//    private var cellUri: String = UriPrefs.uri
-//        set(value) {
-//            field = value
-//            baseAddress = ip + cellUri
-//            UriPrefs.uri = value
-//            Log.d("Now connecting to $baseAddress")
-//        }
     private var baseAddress: String = "ws://${UriPrefs.firstAddressByQRCode}"
         set(value) {
             field = "ws://$value"
@@ -62,22 +55,40 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) {
         connectWS = createWebsocketForChannel(CONNECTION)
         routeWS = createWebsocketForChannel(ROUTE)
         alarmWS = createWebsocketForChannel(ALARM)
-        if (AreaState.area != null) connectWS.send(MainPresenter.NORMAL_CONNECTION)
+        setupWS()
     }
 
     private fun disconnectWS() {
-        connectWS.send(MainPresenter.DISCONNECTION)
-        alarmWS.send(MainPresenter.DISCONNECTION)
+        connectWS.close()
+        alarmWS.close()
+        routeWS.close()
     }
 
     private fun createWebsocketForChannel(channel: CHANNEL): CustomWebSocket {
-        val address = baseAddress + channel.endpoint
+        val address = "$baseAddress${channel.endpoint}"
         return when (channel) {
             CONNECTION -> BaseWebSocket(address, messageCallbacks::onConnectMessageReceived)
             ROUTE -> BaseWebSocket(address, messageCallbacks::onRouteMessageReceived)
             ALARM -> BaseWebSocket(address, messageCallbacks::onAlarmMessageReceived)
             POSITION_UPDATE -> throw UnsupportedOperationException()
         }
+    }
+
+    private fun setupWS() {
+        if (AreaState.area != null) {
+            connectWS.send(MainPresenter.NORMAL_CONNECTION)
+            alarmWS.send(MainPresenter.ALARM_SETUP)
+        }
+    }
+
+    private fun setupAlarmWS() {
+        if (AreaState.area != null) {
+            alarmWS.send(MainPresenter.ALARM_SETUP)
+        }
+    }
+
+    override fun onAreaUpdated(area: AreaViewedFromAUser) {
+        setupAlarmWS()
     }
 }
 
@@ -96,6 +107,10 @@ class BaseWebSocket(address: String, private val onMessageListener: (text: Strin
         client.dispatcher().executorService().shutdown()
     }
 
+    override fun onMessage(webSocket: WebSocket, text: String) {
+        onMessageListener(text)
+    }
+
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String?) {
         webSocket.close(1000, null)
     }
@@ -108,8 +123,8 @@ class BaseWebSocket(address: String, private val onMessageListener: (text: Strin
         webSocket.send(s)
     }
 
-    override fun onMessage(webSocket: WebSocket, text: String) {
-        onMessageListener(text)
+    override fun close() {
+        webSocket.close(1000, null)
     }
 }
 

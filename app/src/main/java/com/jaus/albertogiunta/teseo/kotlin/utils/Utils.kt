@@ -21,6 +21,11 @@ object IDExtractor {
 
     fun roomsInfoListFromIDs(ids: List<RoomID>, area: AreaViewedFromAUser): List<RoomInfo> =
             roomsListFromIDs(ids, area).map { (info) -> info }
+
+    fun roomFromUri(id: Int, area: AreaViewedFromAUser): RoomViewedFromAUser =
+            area.rooms.first { r -> r.info.id.serial == id }
+
+    fun getSerialFromIP(str: String): Int = str.split("uri").last().toInt()
 }
 
 object Unmarshaler {

@@ -13,7 +13,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     companion object {
         const val FIRST_CONNECTION = "firstConnection"
         const val NORMAL_CONNECTION = "normalConnection"
-        const val DISCONNECTION = "disconnect"
+        const val ALARM_SETUP = "okToReceiveAlarms"
         const val NORMAL_CONNECTION_RESPONSE = "ack"
         const val END_ALARM = "endAlarm"
         const val SYS_SHUTDOWN = "sysShutdown"
@@ -29,6 +29,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
     private var signalObservers: MutableSet<SignalListener> = mutableSetOf()
     private var positionObservers: MutableSet<UserPositionListener> = mutableSetOf()
+    private var areaObservers: MutableSet<AreaUpdateListener> = mutableSetOf()
     private var cellObservers: MutableSet<CellUpdateListener> = mutableSetOf()
     private var sysShutdownObservers: MutableSet<SystemShutdownListener> = mutableSetOf()
 
@@ -58,13 +59,18 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     private var emergencyRoute: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(it.route, AreaState.area!!), true) }
+            if (value != null && AreaState.area != null) {
+                view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(value.route, AreaState.area!!), true)
+            }
         }
 
+    private var isResetting: Boolean = false
 
     init {
         signalObservers.add(view)
         sysShutdownObservers.add(view)
+        areaObservers.add(view)
+        areaObservers.add(webSocketHelper)
         cellObservers.add(view)
         cellObservers.add(signal)
         positionObservers.add(this)
@@ -93,19 +99,19 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     }
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
-        view.onAreaUpdated(area)
-        cell = AreaState.area?.rooms?.first({ (info) -> info.id.serial == UriPrefs.firstAddressByQRCode.split("uri").last().toInt() })
+        cell = AreaState.area?.rooms?.first({ (info) -> info.id.serial == IDExtractor.getSerialFromIP(UriPrefs.firstAddressByQRCode) })
         position = if (cell!!.info.isEntryPoint) DistanceHelper.calculateMidPassage(cell!!.passages.first { (neighborId) -> neighborId == MovementHelper.NEUTRAL_PASSAGE }) else cell!!.info.antennaPosition
-        Log.d("onConnectMessageReceived: cellId " + cell?.info?.id)
-
+        areaObservers.forEach { o -> o.onAreaUpdated(area) }
+        Log.d("onConnectMessageReceived: cellId ${cell?.info?.id}")
     }
 
     override fun onConnectMessageReceived(connectMessage: String?) {
         connectMessage?.let {
             if (connectMessage == NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
                 cell = AreaState.area?.rooms?.first { (infoCell) -> infoCell.id.serial == signal.bestNewCandidate.info.id.serial }
+                if (isResetting) position = cell!!.info.antennaPosition; isResetting = false
                 isSwitching = false
-                Log.d("onConnectMessageReceived: cellId" + cell?.info?.id)
+                Log.d("onConnectMessageReceived: cellId ${cell?.info?.id}")
             } else if (connectMessage != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
                 onAreaUpdated(Unmarshaler.unmarshalArea(it))
             } else {
@@ -115,10 +121,11 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     }
 
     override fun onAlarmMessageReceived(alarmMessage: String?) {
+        Log.d("onAlarmMessageReceived: $alarmMessage")
         when (alarmMessage) {
             END_ALARM -> view.invalidateRoute(true)
             SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
-            else -> emergencyRoute = alarmMessage?.let { Unmarshaler.unmarshalRouteResponse(it) }
+            else -> emergencyRoute = Unmarshaler.unmarshalRouteResponse(alarmMessage!!)
         }
     }
 
@@ -137,7 +144,11 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
 
     override fun askConnection() {
-        webSocketHelper.connectWS.send(if (isSetupFinished()) NORMAL_CONNECTION else FIRST_CONNECTION)
+        if (isResetting) {
+            onSwitchToCellRequested(IDExtractor.roomFromUri(IDExtractor.getSerialFromIP(UriPrefs.firstAddressByQRCode), AreaState.area!!))
+        } else {
+            webSocketHelper.connectWS.send(if (isSetupFinished()) NORMAL_CONNECTION else FIRST_CONNECTION)
+        }
     }
 
 
@@ -145,6 +156,10 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         val depId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()
         val arrId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == arrivalRoomName }.map { (info) -> info.id.serial }.first()
         AreaState.area?.let { webSocketHelper.routeWS.send("uri$depId-uri$arrId") }
+    }
+
+    override fun startReset() {
+        isResetting = true
     }
 
     private fun isSetupFinished(): Boolean {
