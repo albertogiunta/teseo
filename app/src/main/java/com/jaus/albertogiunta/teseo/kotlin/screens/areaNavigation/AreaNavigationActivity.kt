@@ -72,12 +72,24 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        toggleViews(false)
+        etIPAddress.setText(UriPrefs.firstAddressByQRCode, TextView.BufferType.EDITABLE)
+        presenter = MainPresenter(this)
+    }
+
+    override fun onStop() {
+        presenter.onStop()
+        super.onStop()
+    }
+
     override fun context(): Context = this@MainActivity
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         inputMethodManager.hideSoftInputFromWindow(layoutSecond.windowToken, 0)
-        toggleViews(true)
         presenter.askConnection()
+        toggleViews(true)
     }
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
@@ -132,7 +144,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
     }
 
-    private fun toggleViews(areaOn: Boolean) {
+    override fun toggleViews(areaOn: Boolean) {
         when (areaOn) {
             true -> {
                 layoutFirst.visibility = View.GONE

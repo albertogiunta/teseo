@@ -38,7 +38,6 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
             field = value
             cellObservers.forEach { o ->
                 value?.let {
-                    Log.d(": $it")
                     o.onCellUpdated(it)
                 }
             }
@@ -76,6 +75,22 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         positionObservers.add(this)
         positionObservers.add(signal)
         positionObservers.add(view)
+    }
+
+    override fun onStop() {
+        UriPrefs.firstAddressByQRCode = webSocketHelper.baseAddress.split("ws://").last()
+        webSocketHelper.disconnectWS()
+        AreaState.area = null
+        cell = null
+    }
+
+    override fun onResume() {
+        if (!isSetupFinished()) {
+            signal = SignalHelper(this)
+            view.toggleViews(false)
+            askConnection()
+        }
+
     }
 
     override fun onMovementDetected(direction: Direction) {

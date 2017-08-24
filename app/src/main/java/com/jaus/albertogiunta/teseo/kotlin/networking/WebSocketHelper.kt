@@ -28,9 +28,10 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) : AreaUp
     lateinit var routeWS: CustomWebSocket
     private lateinit var alarmWS: CustomWebSocket
 
-    private var baseAddress: String = "ws://${UriPrefs.firstAddressByQRCode}"
+    var baseAddress: String = "ws://${UriPrefs.firstAddressByQRCode}"
         set(value) {
             field = "ws://$value"
+            UriPrefs.firstAddressByQRCode = value.split("ws://").last()
             Log.d("Now connecting to $value")
         }
 
@@ -51,14 +52,14 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) : AreaUp
         }
     }
 
-    private fun initWS() {
+    fun initWS() {
         connectWS = createWebsocketForChannel(CONNECTION)
         routeWS = createWebsocketForChannel(ROUTE)
         alarmWS = createWebsocketForChannel(ALARM)
         setupWS()
     }
 
-    private fun disconnectWS() {
+    fun disconnectWS() {
         connectWS.close()
         alarmWS.close()
         routeWS.close()

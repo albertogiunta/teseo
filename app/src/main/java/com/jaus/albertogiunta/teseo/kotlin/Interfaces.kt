@@ -128,7 +128,14 @@ interface WSMessageCallbacks {
 
 }
 
-interface AreaNavigationView : AreaUpdateListener,
+interface BaseLifecycle {
+    fun onStop()
+
+    fun onResume()
+}
+
+interface AreaNavigationView :
+        AreaUpdateListener,
         UserPositionListener,
         RouteListener,
         CellUpdateListener,
@@ -140,9 +147,15 @@ interface AreaNavigationView : AreaUpdateListener,
      */
     fun context(): Context
 
+    /**
+     * Shows the view instead of the setup activity or not
+     */
+    fun toggleViews(areaOn: Boolean)
 }
 
-interface AreaNavigationPresenter : AreaUpdateListener,
+interface AreaNavigationPresenter :
+        BaseLifecycle,
+        AreaUpdateListener,
         UserMovementListener,
         UserPositionListener,
         SignalAndCellSwitchingListener,
