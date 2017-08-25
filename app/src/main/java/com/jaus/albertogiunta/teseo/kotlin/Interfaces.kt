@@ -72,6 +72,9 @@ interface RouteListener {
 
 interface SystemShutdownListener {
 
+    /**
+     * Callback for when the system shuts down and the client can't connect to its host anymore
+     */
     fun onShutdownReceived()
 
 }
@@ -128,9 +131,19 @@ interface WSMessageCallbacks {
 
 }
 
-interface BaseLifecycle {
+/**
+ * To be implemented by every presenter, its methods provide a 1:1 mapping with the ones in the activity, in order to correctly handle lifecycle events
+ */
+interface BasePresenter {
+
+    /**
+     * Call when onStop on the view occurs
+     */
     fun onStop()
 
+    /**
+     * Call when onStop on the view occurs
+     */
     fun onResume()
 }
 
@@ -154,7 +167,7 @@ interface AreaNavigationView :
 }
 
 interface AreaNavigationPresenter :
-        BaseLifecycle,
+        BasePresenter,
         AreaUpdateListener,
         UserMovementListener,
         UserPositionListener,

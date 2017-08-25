@@ -7,7 +7,7 @@ import com.jaus.albertogiunta.teseo.kotlin.data.AreaState
 import com.jaus.albertogiunta.teseo.kotlin.data.AreaViewedFromAUser
 import com.jaus.albertogiunta.teseo.kotlin.data.CellInfo
 import com.jaus.albertogiunta.teseo.kotlin.networking.CHANNEL.*
-import com.jaus.albertogiunta.teseo.kotlin.screens.areaNavigation.MainPresenter
+import com.jaus.albertogiunta.teseo.kotlin.utils.MsgToWebsocket
 import com.jaus.albertogiunta.teseo.kotlin.utils.UriPrefs
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -52,17 +52,20 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) : AreaUp
         }
     }
 
-    fun initWS() {
-        connectWS = createWebsocketForChannel(CONNECTION)
-        routeWS = createWebsocketForChannel(ROUTE)
-        alarmWS = createWebsocketForChannel(ALARM)
-        setupWS()
-    }
-
+    /**
+     * Disconnects every open websocket
+     */
     fun disconnectWS() {
         connectWS.close()
         alarmWS.close()
         routeWS.close()
+    }
+
+    private fun initWS() {
+        connectWS = createWebsocketForChannel(CONNECTION)
+        routeWS = createWebsocketForChannel(ROUTE)
+        alarmWS = createWebsocketForChannel(ALARM)
+        setupWS()
     }
 
     private fun createWebsocketForChannel(channel: CHANNEL): CustomWebSocket {
@@ -77,14 +80,14 @@ class WebSocketHelper(private val messageCallbacks: WSMessageCallbacks) : AreaUp
 
     private fun setupWS() {
         if (AreaState.area != null) {
-            connectWS.send(MainPresenter.NORMAL_CONNECTION)
-            alarmWS.send(MainPresenter.ALARM_SETUP)
+            connectWS.send(MsgToWebsocket.NORMAL_CONNECTION)
+            alarmWS.send(MsgToWebsocket.ALARM_SETUP)
         }
     }
 
     private fun setupAlarmWS() {
         if (AreaState.area != null) {
-            alarmWS.send(MainPresenter.ALARM_SETUP)
+            alarmWS.send(MsgToWebsocket.ALARM_SETUP)
         }
     }
 

@@ -6,6 +6,18 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 
 
+object MsgFromWebsocket {
+    const val NORMAL_CONNECTION_RESPONSE = "ack"
+    const val END_ALARM = "endAlarm"
+    const val SYS_SHUTDOWN = "sysShutdown"
+}
+
+object MsgToWebsocket {
+    const val FIRST_CONNECTION = "firstConnection"
+    const val NORMAL_CONNECTION = "normalConnection"
+    const val ALARM_SETUP = "okToReceiveAlarms"
+}
+
 object EmulatorUtils {
 
     /**

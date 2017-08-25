@@ -10,15 +10,6 @@ import trikita.log.Log
 
 class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresenter {
 
-    companion object {
-        const val FIRST_CONNECTION = "firstConnection"
-        const val NORMAL_CONNECTION = "normalConnection"
-        const val ALARM_SETUP = "okToReceiveAlarms"
-        const val NORMAL_CONNECTION_RESPONSE = "ack"
-        const val END_ALARM = "endAlarm"
-        const val SYS_SHUTDOWN = "sysShutdown"
-    }
-
     private var isSwitching: Boolean = false
 
     private var signal: SignalHelper = SignalHelper(this)
@@ -78,7 +69,6 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     }
 
     override fun onStop() {
-        UriPrefs.firstAddressByQRCode = webSocketHelper.baseAddress.split("ws://").last()
         webSocketHelper.disconnectWS()
         AreaState.area = null
         cell = null
@@ -117,29 +107,26 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         cell = AreaState.area?.rooms?.first({ (info) -> info.id.serial == IDExtractor.getSerialFromIP(UriPrefs.firstAddressByQRCode) })
         position = if (cell!!.info.isEntryPoint) DistanceHelper.calculateMidPassage(cell!!.passages.first { (neighborId) -> neighborId == MovementHelper.NEUTRAL_PASSAGE }) else cell!!.info.antennaPosition
         areaObservers.forEach { o -> o.onAreaUpdated(area) }
-        Log.d("onConnectMessageReceived: cellId ${cell?.info?.id}")
     }
 
     override fun onConnectMessageReceived(connectMessage: String?) {
         connectMessage?.let {
-            if (connectMessage == NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
+            if (connectMessage == MsgFromWebsocket.NORMAL_CONNECTION_RESPONSE && isSetupFinished()) {
                 cell = AreaState.area?.rooms?.first { (infoCell) -> infoCell.id.serial == signal.bestNewCandidate.info.id.serial }
                 if (isResetting) position = cell!!.info.antennaPosition; isResetting = false
                 isSwitching = false
-                Log.d("onConnectMessageReceived: cellId ${cell?.info?.id}")
-            } else if (connectMessage != NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
+            } else if (connectMessage != MsgFromWebsocket.NORMAL_CONNECTION_RESPONSE && !isSetupFinished()) {
                 onAreaUpdated(Unmarshaler.unmarshalArea(it))
             } else {
-                Log.d("onConnectMessageReceived: $connectMessage")
+                Log.d("onConnectMessageReceived: message not processed: $connectMessage")
             }
         }
     }
 
     override fun onAlarmMessageReceived(alarmMessage: String?) {
-        Log.d("onAlarmMessageReceived: $alarmMessage")
         when (alarmMessage) {
-            END_ALARM -> view.invalidateRoute(true)
-            SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
+            MsgFromWebsocket.END_ALARM -> view.invalidateRoute(true)
+            MsgFromWebsocket.SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
             else -> emergencyRoute = Unmarshaler.unmarshalRouteResponse(alarmMessage!!)
         }
     }
@@ -157,15 +144,13 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         signalObservers.forEach({ o -> o.onSignalStrengthUpdated(strength) })
     }
 
-
     override fun askConnection() {
         if (isResetting) {
             onSwitchToCellRequested(IDExtractor.roomFromUri(IDExtractor.getSerialFromIP(UriPrefs.firstAddressByQRCode), AreaState.area!!))
         } else {
-            webSocketHelper.connectWS.send(if (isSetupFinished()) NORMAL_CONNECTION else FIRST_CONNECTION)
+            webSocketHelper.connectWS.send(if (isSetupFinished()) MsgToWebsocket.NORMAL_CONNECTION else MsgToWebsocket.FIRST_CONNECTION)
         }
     }
-
 
     override fun askRoute(departureRoomName: String, arrivalRoomName: String) {
         val depId: Int = AreaState.area!!.rooms.filter { (info) -> info.id.name == departureRoomName }.map { (info) -> info.id.serial }.first()

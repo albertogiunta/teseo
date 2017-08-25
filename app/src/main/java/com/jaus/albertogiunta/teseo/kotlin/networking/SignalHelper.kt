@@ -27,7 +27,7 @@ class SignalHelper(private val signalListener: SignalAndCellSwitchingListener) :
                 LOW -> bestNewCandidate = getNewBestCandidate(IDExtractor.roomsListFromIDs(cell.neighbors, AreaState.area!!), userPosition)
                 VERY_LOW -> connectToNextBestCandidate()
             }
-        } catch(e: UninitializedPropertyAccessException) {
+        } catch (e: UninitializedPropertyAccessException) {
             Log.d("onPositionChanged: got exception because not initialized")
         } catch (e: NullPointerException) {
             Log.d("onPositionChanged: got exception while trying to find bestNextCandidate ${cell.neighbors}")
@@ -35,7 +35,6 @@ class SignalHelper(private val signalListener: SignalAndCellSwitchingListener) :
     }
 
     override fun onCellUpdated(cell: RoomViewedFromAUser) {
-        Log.d("onCellUpdated: received new cell!")
         this.cell = cell
         this.bestNewCandidate = cell
     }
@@ -60,7 +59,6 @@ class SignalHelper(private val signalListener: SignalAndCellSwitchingListener) :
     }
 
     private fun connectToNextBestCandidate() {
-        Log.d("connectToNextBestCandidate: signal very low")
         signalListener.onSwitchToCellRequested(bestNewCandidate)
     }
 }
