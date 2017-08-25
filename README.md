@@ -2,8 +2,9 @@
 The Android client for the [Arianna](https://github.com/albertogiunta/arianna/) system.
 
 ## Configuration
-In order for the App to be working, you need to change the IP address associated with the machine where the cells are running on.
+In order for the App to be working, you need to manually insert or just scan a QRCode with the associated value of the address of the entry cell.
 
-You can change this information in the ```build.gradle``` file, at line ```22```:
+- **CUSTOM FOR EACH USE** IP of the first cell: 192.168.1.107
+- **FIXED** URI of the first cell: :8081/uri1
 
-```buildConfigField "String", "IP_ADDRESS", "\"192.168.0.111\""```
+The final address should like this: *192.168.1.107***:8081/uri1**
