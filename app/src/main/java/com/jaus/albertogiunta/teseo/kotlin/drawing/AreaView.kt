@@ -106,7 +106,7 @@ class AreaView : View {
 
     fun drawRoute(route: List<RoomInfo>, isEmergency: Boolean) {
         if (isEmergency || (!isEmergency && !isEmergencyModeOn)) {
-            if (isEmergency) paintRoute.color = Color.RED else Color.GREEN
+            if (isEmergency) paintRoute.color = Color.RED else paintRoute.color = Color.GREEN
             isEmergencyModeOn = isEmergency
             shouldDisplayRoute = true
             this.route = route

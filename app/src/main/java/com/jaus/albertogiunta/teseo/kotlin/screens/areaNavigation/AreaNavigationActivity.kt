@@ -50,7 +50,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
 
         btnLaterConnect.setOnClickListener {
-            presenter.startReset()
+            presenter = MainPresenter(this)
             toggleViews(false)
         }
 
@@ -113,7 +113,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
     }
 
-    override fun invalidateRoute(isEmergency: Boolean) {
+    override fun invalidateRoute(isEmergency: Boolean, showToast: Boolean) {
         runOnUiThread {
             val message: String = when (isEmergency) {
                 false -> "You reached your destination"
@@ -121,7 +121,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
             }
             drawView.undrowRoute()
             tvEmergencyMode.visibility = View.GONE
-            Snackbar.make(layoutSecond, message, Snackbar.LENGTH_LONG).show()
+            if (showToast) Snackbar.make(layoutSecond, message, Snackbar.LENGTH_LONG).show()
         }
     }
 

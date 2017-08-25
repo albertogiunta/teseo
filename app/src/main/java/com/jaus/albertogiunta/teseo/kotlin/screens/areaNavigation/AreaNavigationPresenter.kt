@@ -43,7 +43,9 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     private var route: RouteResponseShort? = null
         set(value) {
             field = value
-            value?.let { view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(it.route, AreaState.area!!), false) }
+            if (value != null && AreaState.area != null) {
+                view.onRouteReceived(IDExtractor.roomsInfoListFromIDs(value.route, AreaState.area!!), false)
+            }
         }
 
     private var emergencyRoute: RouteResponseShort? = null
@@ -72,15 +74,15 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         webSocketHelper.disconnectWS()
         AreaState.area = null
         cell = null
+        view.invalidateRoute(isEmergency = false, showToast = false)
     }
 
     override fun onResume() {
         if (!isSetupFinished()) {
             signal = SignalHelper(this)
-            view.toggleViews(false)
+            view.toggleViews(areaOn = false)
             askConnection()
         }
-
     }
 
     override fun onMovementDetected(direction: Direction) {
@@ -98,7 +100,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
 
     override fun onPositionChanged(userPosition: Point) {
         if (isSetupFinished() && route?.route?.last()?.serial == cell?.info?.id?.serial) {
-            view.invalidateRoute(false)
+            view.invalidateRoute(false, true)
             route = null
         }
     }
@@ -124,14 +126,16 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     }
 
     override fun onAlarmMessageReceived(alarmMessage: String?) {
+        Log.d("onAlarmMessageReceived: $alarmMessage")
         when (alarmMessage) {
-            MsgFromWebsocket.END_ALARM -> view.invalidateRoute(true)
+            MsgFromWebsocket.END_ALARM -> view.invalidateRoute(true, true)
             MsgFromWebsocket.SYS_SHUTDOWN -> sysShutdownObservers.forEach { o -> o.onShutdownReceived() }
             else -> emergencyRoute = Unmarshaler.unmarshalRouteResponse(alarmMessage!!)
         }
     }
 
     override fun onRouteMessageReceived(routeMessage: String?) {
+        Log.d("onRouteMessageReceived: $routeMessage")
         routeMessage?.let { route = Unmarshaler.unmarshalRouteResponse(it) }
     }
 

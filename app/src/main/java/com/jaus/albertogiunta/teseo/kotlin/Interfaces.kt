@@ -66,7 +66,7 @@ interface RouteListener {
     /**
      * Callback for when a cell is received
      */
-    fun invalidateRoute(isEmergency: Boolean)
+    fun invalidateRoute(isEmergency: Boolean, showToast: Boolean)
 
 }
 
