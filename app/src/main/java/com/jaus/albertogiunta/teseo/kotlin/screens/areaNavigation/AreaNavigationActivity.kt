@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.layout_launch.*
 import kotlinx.android.synthetic.main.layout_normal_navigation.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import trikita.log.Log
 
 @Suppress("EXPERIMENTAL_FEATURE_WARNING")
 class MainActivity : AreaNavigationView, BaseActivity() {
@@ -38,7 +39,6 @@ class MainActivity : AreaNavigationView, BaseActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 1)
         }
 
-        presenter = MainPresenter(this)
         btnFirstConnect.setOnClickListener {
             startActivityForResult(Intent(this, InitialSetupActivity::class.java), 1)
         }
@@ -50,7 +50,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
 
         btnLaterConnect.setOnClickListener {
-            presenter = MainPresenter(this)
+            presenter.onStop()
             toggleViews(false)
         }
 
@@ -76,7 +76,11 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         super.onResume()
         toggleViews(false)
         etIPAddress.setText(UriPrefs.firstAddressByQRCode, TextView.BufferType.EDITABLE)
-        presenter = MainPresenter(this)
+        try {
+            presenter.onStop()
+        } catch (e: UninitializedPropertyAccessException) {
+            Log.d("onResume: Presenter was accessed when not initialized")
+        }
     }
 
     override fun onStop() {
@@ -87,6 +91,7 @@ class MainActivity : AreaNavigationView, BaseActivity() {
     override fun context(): Context = this@MainActivity
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter = MainPresenter(this)
         inputMethodManager.hideSoftInputFromWindow(layoutSecond.windowToken, 0)
         presenter.askConnection()
         toggleViews(true)

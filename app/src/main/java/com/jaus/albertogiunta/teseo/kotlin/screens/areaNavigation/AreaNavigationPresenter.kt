@@ -75,6 +75,7 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
         AreaState.area = null
         cell = null
         view.invalidateRoute(isEmergency = false, showToast = false)
+        UriPrefs.firstAddressByQRCode = webSocketHelper.baseAddress.split("ws://").last()
     }
 
     override fun onResume() {
