@@ -81,8 +81,6 @@ class MainPresenter(private val view: AreaNavigationView) : AreaNavigationPresen
     override fun onResume() {
         if (!isSetupFinished()) {
             signal = SignalHelper(this)
-            view.toggleViews(areaOn = false)
-            askConnection()
         }
     }
 

@@ -30,6 +30,7 @@ import trikita.log.Log
 class MainActivity : AreaNavigationView, BaseActivity() {
 
     private lateinit var presenter: AreaNavigationPresenter
+    private var shouldDisplayArea: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,19 +73,24 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         }
     }
 
-    override fun onResume() {
+    override fun onStart() {
         super.onResume()
-        toggleViews(false)
+        toggleViews(shouldDisplayArea)
         etIPAddress.setText(UriPrefs.firstAddressByQRCode, TextView.BufferType.EDITABLE)
         try {
-            presenter.onStop()
+            presenter.onResume()
         } catch (e: UninitializedPropertyAccessException) {
             Log.d("onResume: Presenter was accessed when not initialized")
         }
     }
 
     override fun onStop() {
-        presenter.onStop()
+        try {
+            presenter.onStop()
+            shouldDisplayArea = false
+        } catch (e: UninitializedPropertyAccessException) {
+            Log.d("onResume: Presenter was accessed when not initialized")
+        }
         super.onStop()
     }
 
@@ -94,7 +100,8 @@ class MainActivity : AreaNavigationView, BaseActivity() {
         presenter = MainPresenter(this)
         inputMethodManager.hideSoftInputFromWindow(layoutSecond.windowToken, 0)
         presenter.askConnection()
-        toggleViews(true)
+        shouldDisplayArea = true
+        toggleViews(shouldDisplayArea)
     }
 
     override fun onAreaUpdated(area: AreaViewedFromAUser) {
